@@ -461,7 +461,7 @@ function Home({ go, hero }: HomeProps) {
               { icon: MapPin, text: "3833 Mandy Way, San Ramon, CA", href: null },
               { icon: Users, text: "Bay Area in-person • Online nationwide", href: null },
               { icon: Mail, text: "info.studycore@gmail.com", href: "mailto:info.studycore@gmail.com" },
-              { icon: Phone, text: "(925) 477-8509", href: "tel:+9254778509" },
+              { icon: Phone, text: "(925) 477-8509", href: "tel:+19254778509" },
               { icon: Star, text: "Avg. +250 SAT points", href: null },
               { icon: Award, text: "96% 5-star reviews", href: null },
             ].map((item, index) => (
