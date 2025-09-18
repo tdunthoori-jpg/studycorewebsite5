@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { GraduationCap, BookOpen, Users, Star, CheckCircle, Mail, Phone, MapPin, Briefcase, ArrowRight, TrendingUp, Award } from "lucide-react";
+import emailjs from "@emailjs/browser";
+import { toast } from "@/components/ui/sonner";
 
 // Enhanced animation presets
 const fadeUp = {
@@ -78,7 +80,7 @@ interface FormData {
   name: string;
   email: string;
   grade: string;
-  goals: string;
+  message: string;
 }
 
 interface HomeProps {
@@ -105,6 +107,7 @@ interface ContactProps {
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleSubmit: (e: React.FormEvent) => void;
   calendly: string;
+  sending: boolean;
 }
 
 /* ---------------------------- Shared constants ---------------------------- */
@@ -120,8 +123,9 @@ function StudyCoreSite() {
   const CALENDLY = "https://calendly.com/info-studycore/30min?month=2025-09";
 
   const [section, setSection] = useState<SectionKey>("home");
-  const [form, setForm] = useState<FormData>({ name: "", email: "", grade: "", goals: "" });
+  const [form, setForm] = useState<FormData>({ name: "", email: "", grade: "", message: "" });
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [sending, setSending] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -131,13 +135,40 @@ function StudyCoreSite() {
     setSection(key);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent("StudyCore Inquiry");
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\nGrade: ${form.grade}\nGoals: ${form.goals}`
-    );
-    window.location.href = `mailto:info.studycore@gmail.com?subject=${subject}&body=${body}`;
+
+    const serviceId = "service_c9nhawr";
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string | undefined;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY as string | undefined;
+
+    if (!templateId || !publicKey) {
+      toast.error("Email service not configured. Please set VITE_EMAILJS_TEMPLATE_ID and VITE_EMAILJS_PUBLIC_KEY.");
+      return;
+    }
+
+    try {
+      setSending(true);
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          name: form.name,
+          email: form.email,
+          grade: form.grade,
+          message: form.message,
+        },
+        { publicKey }
+      );
+
+      toast.success("Message sent! We'll get back to you within one business day.");
+      setForm({ name: "", email: "", grade: "", message: "" });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to send. Please try again or email us directly.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const outcomes: Outcome[] = [
@@ -276,7 +307,7 @@ function StudyCoreSite() {
             {section === 'results' && <Results outcomes={outcomes} />}
             {section === 'pricing' && <Pricing go={go} hoveredCard={hoveredCard} setHoveredCard={setHoveredCard} />}
             {section === 'faq' && <FAQ />}
-            {section === 'contact' && <Contact form={form} handleChange={handleChange} handleSubmit={handleSubmit} calendly={CALENDLY} />}
+            {section === 'contact' && <Contact form={form} handleChange={handleChange} handleSubmit={handleSubmit} calendly={CALENDLY} sending={sending} />}
             {section === 'workwithus' && <WorkWithUs />}
           </motion.div>
         </AnimatePresence>
@@ -430,7 +461,7 @@ function Home({ go, hero }: HomeProps) {
               { icon: MapPin, text: "3833 Mandy Way, San Ramon, CA", href: null },
               { icon: Users, text: "Bay Area in-person • Online nationwide", href: null },
               { icon: Mail, text: "info.studycore@gmail.com", href: "mailto:info.studycore@gmail.com" },
-              { icon: Phone, text: "(408) 420-4076", href: "tel:+14084204076" },
+              { icon: Phone, text: "(925) 477-8509", href: "tel:+9254778509" },
               { icon: Star, text: "Avg. +250 SAT points", href: null },
               { icon: Award, text: "96% 5-star reviews", href: null },
             ].map((item, index) => (
@@ -1081,7 +1112,7 @@ function FAQ() {
   );
 }
 
-function Contact({ form, handleChange, handleSubmit, calendly }: ContactProps) {
+function Contact({ form, handleChange, handleSubmit, calendly, sending }: ContactProps) {
   return (
     <section className="py-16 lg:py-24 border-t border-sky-700/60">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1151,10 +1182,10 @@ function Contact({ form, handleChange, handleSubmit, calendly }: ContactProps) {
                   </motion.div>
                   <motion.div whileFocus={{ scale: 1.02 }} className="sm:col-span-2">
                     <Textarea 
-                      name="goals" 
-                      value={form.goals} 
+                      name="message" 
+                      value={form.message} 
                       onChange={handleChange} 
-                      placeholder="What are your goals?" 
+                      placeholder="Your message" 
                       className="min-h-[120px] bg-blue-950/70 border-sky-600 text-white placeholder:text-sky-100/50 focus:border-sky-400 transition-colors duration-300" 
                     />
                   </motion.div>
@@ -1162,19 +1193,13 @@ function Contact({ form, handleChange, handleSubmit, calendly }: ContactProps) {
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Button 
                         type="submit" 
+                        disabled={sending}
                         className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400 transition-all duration-300"
                       >
-                        Send
+                        {sending ? "Sending..." : "Send"}
                       </Button>
                     </motion.div>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button 
-                        asChild 
-                        variant="outline" 
-                        className="rounded-2xl border-sky-400 text-sky-300 hover:bg-sky-500/20 transition-all duration-300"
-                      >
-                        <a href="mailto:info.studycore@gmail.com?subject=StudyCore%20Inquiry">Email Us</a>
-                      </Button>
                     </motion.div>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Button 
@@ -1204,11 +1229,11 @@ function Contact({ form, handleChange, handleSubmit, calendly }: ContactProps) {
                   <Mail className="h-4 w-4" /> info.studycore@gmail.com
                 </motion.a>
                 <motion.a 
-                  href="tel:+14084204076" 
+                  href="tel:+19254778509" 
                   className="flex items-center gap-2 hover:text-sky-300 transition-colors duration-300"
                   whileHover={{ x: 5 }}
                 >
-                  <Phone className="h-4 w-4" /> (408) 420-4076
+                  <Phone className="h-4 w-4" /> (925) 477-8509
                 </motion.a>
                 <motion.div 
                   className="flex items-center gap-2"
