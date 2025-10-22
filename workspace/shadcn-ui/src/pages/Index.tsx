@@ -279,13 +279,24 @@ function StudyCoreSite() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8 }}
           >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mr-2">
               <Button 
                 onClick={() => go('contact')} 
                 className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400 transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button 
+                asChild
+                variant="outline" 
+                className="rounded-2xl border-sky-400 text-sky-300 hover:bg-sky-500/20 transition-all duration-300"
+              >
+                <a href="/portal">
+                  Student Portal
+                </a>
               </Button>
             </motion.div>
           </motion.div>
