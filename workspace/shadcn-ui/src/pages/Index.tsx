@@ -161,6 +161,11 @@ function StudyCoreSite() {
         { publicKey }
       );
 
+      // Track conversion in Google Ads
+      if (typeof window !== 'undefined' && (window as any).gtag_report_conversion) {
+        (window as any).gtag_report_conversion();
+      }
+
       toast.success("Message sent! We'll get back to you within one business day.");
       setForm({ name: "", email: "", grade: "", message: "" });
     } catch (err) {
