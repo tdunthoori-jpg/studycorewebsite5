@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/SimpleAuthContext';
 import { supabase, Assignment, Class, AssignmentSubmission } from '@/lib/supabase';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { 
   Card,
   CardContent,
@@ -10,6 +13,22 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -21,6 +40,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/sonner';
 import { CalendarIcon, ClockIcon, FileIcon, UploadIcon, CheckCircleIcon, ExternalLinkIcon } from 'lucide-react';
 import { format, isPast, isToday } from 'date-fns';
+
+const assignmentSchema = z.object({
+  title: z.string().min(3, 'Title must be at least 3 characters').max(200, 'Title too long'),
+  description: z.string().min(10, 'Description must be at least 10 characters').max(2000, 'Description too long'),
+  due_date: z.string().min(1, 'Due date is required'),
+  file_url: z.string().url('Invalid URL').optional().or(z.literal('')),
+});
+
+type AssignmentFormValues = z.infer<typeof assignmentSchema>;
 
 // Extended submission interface with student profile data
 interface ExtendedSubmission extends AssignmentSubmission {
@@ -48,6 +76,17 @@ export default function AssignmentDetail() {
   const [feedback, setFeedback] = useState('');
   const [grade, setGrade] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  const assignmentForm = useForm<AssignmentFormValues>({
+    resolver: zodResolver(assignmentSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      due_date: '',
+      file_url: '',
+    },
+  });
   
   useEffect(() => {
     if (!user || !profile || !id) {
@@ -306,6 +345,63 @@ export default function AssignmentDetail() {
       setSubmitting(false);
     }
   };
+
+  const handleEditAssignment = async (values: AssignmentFormValues) => {
+    if (!user || !profile || profile.role !== 'tutor' || !assignment) return;
+
+    try {
+      setSubmitting(true);
+
+      const assignmentData = {
+        title: values.title,
+        description: values.description,
+        due_date: new Date(values.due_date).toISOString(),
+        file_url: values.file_url || null,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { data, error } = await supabase
+        .from('assignments')
+        .update(assignmentData)
+        .eq('id', assignment.id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating assignment:', error);
+        toast.error('Failed to update assignment: ' + error.message);
+        return;
+      }
+
+      // Update local state
+      setAssignment(data);
+      setIsEditDialogOpen(false);
+      assignmentForm.reset();
+      toast.success('Assignment updated successfully!');
+    } catch (error) {
+      console.error('Exception updating assignment:', error);
+      toast.error('An unexpected error occurred');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const openEditDialog = () => {
+    if (!assignment) return;
+    
+    // Pre-populate form with current assignment data
+    const dueDate = new Date(assignment.due_date);
+    const formattedDate = dueDate.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
+    
+    assignmentForm.reset({
+      title: assignment.title,
+      description: assignment.description,
+      due_date: formattedDate,
+      file_url: assignment.file_url || '',
+    });
+    
+    setIsEditDialogOpen(true);
+  };
   
   if (loading) {
     return (
@@ -517,7 +613,7 @@ export default function AssignmentDetail() {
               </Badge>
               <Button 
                 variant="outline"
-                onClick={() => navigate(`/assignments/${id}/edit`)}
+                onClick={openEditDialog}
               >
                 Edit Assignment
               </Button>
@@ -835,6 +931,108 @@ export default function AssignmentDetail() {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Assignment Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Assignment</DialogTitle>
+            <DialogDescription>
+              Update the assignment details
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...assignmentForm}>
+            <form onSubmit={assignmentForm.handleSubmit(handleEditAssignment)} className="space-y-4">
+              <FormField
+                control={assignmentForm.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Assignment Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Week 1 - Introduction to React" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={assignmentForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Provide details about the assignment..." 
+                        rows={4}
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={assignmentForm.control}
+                name="due_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Due Date</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="datetime-local"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Select the date and time when this assignment is due
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={assignmentForm.control}
+                name="file_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Assignment File URL (Optional)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="https://drive.google.com/file/d/..."
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Link to assignment materials or resources
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex justify-end gap-2 pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  disabled={submitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? 'Updating...' : 'Update Assignment'}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

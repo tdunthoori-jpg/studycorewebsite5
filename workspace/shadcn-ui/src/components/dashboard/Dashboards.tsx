@@ -880,7 +880,7 @@ export function TutorDashboard() {
                                 <Button 
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => navigate(`/assignments/${assignment.id}/edit`)}
+                                  onClick={() => navigate(`/assignments/${assignment.id}`)}
                                 >
                                   Edit
                                 </Button>
