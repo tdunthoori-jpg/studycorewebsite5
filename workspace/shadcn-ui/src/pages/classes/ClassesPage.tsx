@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/SimpleAuthContext';
 import { supabase, Class } from '@/lib/supabase';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from '@/components/ui/sonner';
 import { Users2Icon, SearchIcon, BookOpenIcon, FilterIcon, SortAscIcon } from 'lucide-react';
+import { fadeUp, staggerContainer, staggerItem } from '@/lib/animations';
 
 interface ExtendedClass extends Class {
   isEnrolled?: boolean;
@@ -264,13 +266,21 @@ export default function ClassesPage() {
   };
   
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+    <motion.div 
+      className="container mx-auto p-4"
+      initial="hidden"
+      animate="show"
+      variants={staggerContainer}
+    >
+      <motion.div 
+        className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4"
+        variants={fadeUp}
+      >
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-bold text-sky-300">
             {profile?.role === 'tutor' ? 'Your Classes' : 'Available Classes'}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sky-100/70">
             {profile?.role === 'tutor' 
               ? 'Manage and organize your class offerings'
               : 'Browse and enroll in available classes'
@@ -279,21 +289,25 @@ export default function ClassesPage() {
         </div>
         
         {profile?.role === 'tutor' && (
-          <Button onClick={() => navigate('/classes/create')}>
+          <Button 
+            onClick={() => navigate('/classes/create')}
+            className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+          >
             Create New Class
           </Button>
         )}
-      </div>
+      </motion.div>
 
       {/* Enhanced Search and Filter Controls */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FilterIcon className="h-5 w-5" />
-            Search & Filter
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <motion.div variants={fadeUp}>
+        <Card className="mb-6 bg-blue-900/60 border-blue-700/60">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <FilterIcon className="h-5 w-5 text-sky-400" />
+              Search & Filter
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Search Input */}
             <div className="relative lg:col-span-2">
@@ -376,74 +390,83 @@ export default function ClassesPage() {
           </div>
         </CardContent>
       </Card>
+      </motion.div>
 
       {/* Results Summary */}
-      <div className="flex justify-between items-center mb-4">
-        <p className="text-sm text-muted-foreground">
+      <motion.div 
+        className="flex justify-between items-center mb-4"
+        variants={fadeUp}
+      >
+        <p className="text-sm text-sky-100/70">
           Found {filteredAndSortedClasses.length} class{filteredAndSortedClasses.length !== 1 ? 'es' : ''}
           {searchTerm && ` matching "${searchTerm}"`}
         </p>
-      </div>
+      </motion.div>
       
       {loading ? (
         <div className="flex justify-center items-center min-h-[400px]">
-          <p>Loading classes...</p>
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-sky-400 border-t-transparent"></div>
         </div>
       ) : filteredAndSortedClasses.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          variants={staggerContainer}
+        >
           {filteredAndSortedClasses.map((cls) => (
-            <Card key={cls.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                  <CardTitle className="line-clamp-2">{cls.name}</CardTitle>
-                  <div className="flex flex-col gap-1">
-                    {profile?.role === 'tutor' && cls.tutor_id === user?.id ? (
-                      <Badge>Your Class</Badge>
-                    ) : (
-                      cls.isEnrolled && <Badge>Enrolled</Badge>
-                    )}
-                    {cls.status === 'active' && (cls.currentStudents || 0) >= cls.max_students && (
-                      <Badge variant="destructive">Full</Badge>
+            <motion.div key={cls.id} variants={staggerItem}>
+              <Card className="hover:shadow-lg transition-all duration-500 bg-blue-900/60 border-blue-700/60 hover:border-sky-500/50">
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="line-clamp-2 text-white">{cls.name}</CardTitle>
+                    <div className="flex flex-col gap-1">
+                      {profile?.role === 'tutor' && cls.tutor_id === user?.id ? (
+                        <Badge className="bg-gradient-to-r from-sky-500 to-indigo-500">Your Class</Badge>
+                      ) : (
+                        cls.isEnrolled && <Badge className="bg-gradient-to-r from-sky-500 to-indigo-500">Enrolled</Badge>
+                      )}
+                      {cls.status === 'active' && (cls.currentStudents || 0) >= cls.max_students && (
+                        <Badge className="bg-red-500/80">Full</Badge>
+                      )}
+                    </div>
+                  </div>
+                  <CardDescription className="line-clamp-3 text-sky-100/70">{cls.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="pb-2 space-y-2">
+                  <div className="flex items-center justify-between text-sm text-white">
+                    <div className="flex items-center gap-1">
+                      <Users2Icon className="h-4 w-4 text-sky-400" />
+                      <span>{cls.currentStudents || 0}/{cls.max_students}</span>
+                    </div>
+                    {cls.price_per_hour && cls.price_per_hour > 0 && (
+                      <span className="font-medium">${cls.price_per_hour}/hr</span>
                     )}
                   </div>
-                </div>
-                <CardDescription className="line-clamp-3">{cls.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="pb-2 space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-1">
-                    <Users2Icon className="h-4 w-4 text-muted-foreground" />
-                    <span>{cls.currentStudents || 0}/{cls.max_students}</span>
-                  </div>
-                  {cls.price_per_hour && cls.price_per_hour > 0 && (
-                    <span className="font-medium">${cls.price_per_hour}/hr</span>
+                  
+                  {cls.subject && (
+                    <Badge variant="outline" className="text-xs border-sky-400 text-sky-300">{cls.subject}</Badge>
                   )}
-                </div>
-                
-                {cls.subject && (
-                  <Badge variant="outline" className="text-xs">{cls.subject}</Badge>
-                )}
-                
-                {cls.level && (
-                  <Badge variant="outline" className="text-xs ml-2">{cls.level}</Badge>
-                )}
-                
-                {profile?.role === 'student' && cls.tutorName && (
-                  <p className="text-xs text-muted-foreground">
-                    Instructor: {cls.tutorName}
-                  </p>
-                )}
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate(`/classes/${cls.id}`)}
-                >
-                  <BookOpenIcon className="h-4 w-4 mr-2" />
-                  {profile?.role === 'tutor' ? 'Manage' : 'View Details'}
-                </Button>
-                
-                {profile?.role === 'tutor' && cls.tutor_id === user?.id && (
+                  
+                  {cls.level && (
+                    <Badge variant="outline" className="text-xs ml-2 border-sky-400 text-sky-300">{cls.level}</Badge>
+                  )}
+                  
+                  {profile?.role === 'student' && cls.tutorName && (
+                    <p className="text-xs text-sky-100/60">
+                      Instructor: {cls.tutorName}
+                    </p>
+                  )}
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => navigate(`/classes/${cls.id}`)}
+                    className="border-sky-400 text-sky-300 hover:bg-sky-500/20"
+                  >
+                    <BookOpenIcon className="h-4 w-4 mr-2" />
+                    {profile?.role === 'tutor' ? 'Manage' : 'View Details'}
+                  </Button>
+                  
+                  {profile?.role === 'tutor' && cls.tutor_id === user?.id && (
                   <Button 
                     variant="secondary" 
                     onClick={() => navigate(`/classes/${cls.id}/edit`)}
@@ -453,44 +476,51 @@ export default function ClassesPage() {
                 )}
               </CardFooter>
             </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       ) : (
-        <Card className="my-8">
-          <CardHeader>
-            <CardTitle>No Classes Found</CardTitle>
-            <CardDescription>
-              {searchTerm || selectedSubject !== 'All Subjects' || selectedLevel !== 'All Levels' || statusFilter !== 'all'
-                ? 'No classes match your current filters. Try adjusting your search criteria.' 
-                : profile?.role === 'tutor'
-                  ? 'You haven\'t created any classes yet.'
-                  : 'There are no available classes at the moment.'
-              }
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            {(searchTerm || selectedSubject !== 'All Subjects' || selectedLevel !== 'All Levels' || statusFilter !== 'all') ? (
-              <Button 
-                variant="outline"
-                onClick={() => {
-                  setSearchTerm('');
-                  setSelectedSubject('All Subjects');
-                  setSelectedLevel('All Levels');
-                  setStatusFilter('all');
-                }}
-              >
-                Clear Filters
-              </Button>
-            ) : (
-              profile?.role === 'tutor' && (
-                <Button onClick={() => navigate('/classes/create')}>
-                  Create Your First Class
+        <motion.div variants={fadeUp}>
+          <Card className="my-8 bg-blue-900/60 border-blue-700/60">
+            <CardHeader>
+              <CardTitle className="text-white">No Classes Found</CardTitle>
+              <CardDescription className="text-sky-100/70">
+                {searchTerm || selectedSubject !== 'All Subjects' || selectedLevel !== 'All Levels' || statusFilter !== 'all'
+                  ? 'No classes match your current filters. Try adjusting your search criteria.' 
+                  : profile?.role === 'tutor'
+                    ? 'You haven\'t created any classes yet.'
+                    : 'There are no available classes at the moment.'
+                }
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
+              {(searchTerm || selectedSubject !== 'All Subjects' || selectedLevel !== 'All Levels' || statusFilter !== 'all') ? (
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedSubject('All Subjects');
+                    setSelectedLevel('All Levels');
+                    setStatusFilter('all');
+                  }}
+                  className="border-sky-400 text-sky-300 hover:bg-sky-500/20"
+                >
+                  Clear Filters
                 </Button>
-              )
-            )}
-          </CardFooter>
-        </Card>
+              ) : (
+                profile?.role === 'tutor' && (
+                  <Button 
+                    onClick={() => navigate('/classes/create')}
+                    className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+                  >
+                    Create Your First Class
+                  </Button>
+                )
+              )}
+            </CardFooter>
+          </Card>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

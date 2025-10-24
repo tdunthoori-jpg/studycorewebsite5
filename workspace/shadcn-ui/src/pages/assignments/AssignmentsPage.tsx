@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/SimpleAuthContext';
 import { supabase, Class, Assignment } from '@/lib/supabase';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/components/ui/sonner';
 import { PlusIcon, SearchIcon, ClockIcon, CheckIcon, AlertCircleIcon } from 'lucide-react';
 import { format, isPast, isToday, addDays, isBefore } from 'date-fns';
+import { fadeUp, staggerContainer, staggerItem } from '@/lib/animations';
 
 export default function AssignmentsPage() {
   const { user, profile } = useAuth();
@@ -188,22 +190,22 @@ export default function AssignmentsPage() {
       <Card 
         key={assignment.id}
         className={`
-          hover:shadow-md transition-shadow cursor-pointer
-          ${isSubmitted ? 'border-blue-400' : isOverdue ? 'border-red-400' : isDueSoon ? 'border-yellow-400' : 'border-green-400'}
+          hover:shadow-lg transition-all duration-500 cursor-pointer bg-blue-900/60 border-blue-700/60 hover:border-sky-500/50
+          ${isSubmitted ? 'border-blue-400' : isOverdue ? 'border-red-400' : isDueSoon ? 'border-yellow-400' : 'border-green-400/50'}
         `}
         onClick={() => navigate(`/assignments/${assignment.id}`)}
       >
         <CardHeader className="pb-2">
           <div className="flex justify-between items-start">
-            <CardTitle className="text-lg">{assignment.title}</CardTitle>
+            <CardTitle className="text-lg text-white">{assignment.title}</CardTitle>
             <div className="flex gap-2">
               {profile?.role === 'student' && isSubmitted && (
-                <Badge variant="secondary">Submitted</Badge>
+                <Badge className="bg-blue-500/80">Submitted</Badge>
               )}
               {profile?.role === 'tutor' && (
-                <Badge variant="outline">{submissionCount} {submissionCount === 1 ? 'submission' : 'submissions'}</Badge>
+                <Badge variant="outline" className="border-sky-400 text-sky-300">{submissionCount} {submissionCount === 1 ? 'submission' : 'submissions'}</Badge>
               )}
-              <Badge variant={isOverdue ? "destructive" : isDueSoon ? "outline" : "default"}>
+              <Badge className={isOverdue ? "bg-red-500/80" : isDueSoon ? "bg-yellow-500/80" : "bg-green-500/80"}>
                 {isOverdue 
                   ? 'Overdue' 
                   : isToday(dueDate)
@@ -213,17 +215,17 @@ export default function AssignmentsPage() {
               </Badge>
             </div>
           </div>
-          <CardDescription>{classInfo?.name || 'Unknown Class'}</CardDescription>
+          <CardDescription className="text-sky-100/70">{classInfo?.name || 'Unknown Class'}</CardDescription>
         </CardHeader>
         <CardContent className="pb-2">
-          <p className="text-sm line-clamp-2">{assignment.description}</p>
-          <div className="flex items-center mt-2 text-sm text-muted-foreground">
-            <ClockIcon className="h-4 w-4 mr-1" />
+          <p className="text-sm line-clamp-2 text-white">{assignment.description}</p>
+          <div className="flex items-center mt-2 text-sm text-sky-100/60">
+            <ClockIcon className="h-4 w-4 mr-1 text-sky-400" />
             <span>Due {format(dueDate, 'PPPP')}</span>
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="border-sky-400 text-sky-300 hover:bg-sky-500/20">
             {profile?.role === 'student' 
               ? (isSubmitted ? 'View Submission' : 'Submit Assignment') 
               : 'View Details'
@@ -233,7 +235,7 @@ export default function AssignmentsPage() {
           {assignment.file_url && (
             <Button 
               size="sm"
-              variant="secondary"
+              className="bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
               asChild
               onClick={(e) => {
                 e.stopPropagation();
@@ -250,11 +252,19 @@ export default function AssignmentsPage() {
   };
   
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+    <motion.div 
+      className="container mx-auto p-4"
+      initial="hidden"
+      animate="show"
+      variants={staggerContainer}
+    >
+      <motion.div 
+        className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4"
+        variants={fadeUp}
+      >
         <div>
-          <h1 className="text-3xl font-bold">Assignments</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold text-sky-300">Assignments</h1>
+          <p className="text-sky-100/70">
             {profile?.role === 'tutor' 
               ? 'Manage and track your class assignments'
               : 'View and submit your assignments'
@@ -264,45 +274,49 @@ export default function AssignmentsPage() {
         
         <div className="flex gap-3">
           <div className="relative">
-            <SearchIcon className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <SearchIcon className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-sky-400" />
             <Input 
               type="text"
               placeholder="Search assignments..." 
-              className="pl-9 w-[250px]"
+              className="pl-9 w-[250px] bg-blue-900/60 border-blue-700/60 text-white placeholder:text-sky-100/50"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           
           {profile?.role === 'tutor' && (
-            <Button onClick={() => navigate('/assignments/create')}>
+            <Button 
+              onClick={() => navigate('/assignments/create')}
+              className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+            >
               <PlusIcon className="h-4 w-4 mr-2" />
               Create Assignment
             </Button>
           )}
         </div>
-      </div>
+      </motion.div>
       
       {loading ? (
         <div className="flex justify-center items-center min-h-[400px]">
-          <p>Loading assignments...</p>
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-sky-400 border-t-transparent"></div>
         </div>
       ) : filteredAssignments.length > 0 ? (
-        <Tabs defaultValue="all" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="all">
-              All Assignments ({filteredAssignments.length})
-            </TabsTrigger>
-            <TabsTrigger value="upcoming">
-              Upcoming ({upcoming.length})
-            </TabsTrigger>
-            <TabsTrigger value="due-soon">
-              Due Soon ({dueSoon.length})
-            </TabsTrigger>
-            <TabsTrigger value="past">
-              Past Due ({pastDue.length})
-            </TabsTrigger>
-          </TabsList>
+        <motion.div variants={fadeUp}>
+          <Tabs defaultValue="all" className="space-y-4">
+            <TabsList className="bg-blue-900/60 border-blue-700/60">
+              <TabsTrigger value="all" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">
+                All Assignments ({filteredAssignments.length})
+              </TabsTrigger>
+              <TabsTrigger value="upcoming" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">
+                Upcoming ({upcoming.length})
+              </TabsTrigger>
+              <TabsTrigger value="due-soon" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">
+                Due Soon ({dueSoon.length})
+              </TabsTrigger>
+              <TabsTrigger value="past" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">
+                Past Due ({pastDue.length})
+              </TabsTrigger>
+            </TabsList>
           
           <TabsContent value="all">
             <ScrollArea className="h-[600px]">
@@ -320,13 +334,13 @@ export default function AssignmentsPage() {
                 </div>
               </ScrollArea>
             ) : (
-              <Card>
+              <Card className="bg-blue-900/60 border-blue-700/60">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <CheckIcon className="h-5 w-5 mr-2 text-green-500" />
+                  <CardTitle className="flex items-center text-white">
+                    <CheckIcon className="h-5 w-5 mr-2 text-green-400" />
                     No Upcoming Assignments
                   </CardTitle>
-                  <CardDescription>You're all caught up!</CardDescription>
+                  <CardDescription className="text-sky-100/70">You're all caught up!</CardDescription>
                 </CardHeader>
               </Card>
             )}
@@ -360,40 +374,46 @@ export default function AssignmentsPage() {
                 </div>
               </ScrollArea>
             ) : (
-              <Card>
+              <Card className="bg-blue-900/60 border-blue-700/60">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <CheckIcon className="h-5 w-5 mr-2 text-green-500" />
+                  <CardTitle className="flex items-center text-white">
+                    <CheckIcon className="h-5 w-5 mr-2 text-green-400" />
                     No Past Due Assignments
                   </CardTitle>
-                  <CardDescription>You're on track with your assignments!</CardDescription>
+                  <CardDescription className="text-sky-100/70">You're on track with your assignments!</CardDescription>
                 </CardHeader>
               </Card>
             )}
           </TabsContent>
         </Tabs>
+        </motion.div>
       ) : (
-        <Card className="my-8">
-          <CardHeader>
-            <CardTitle>No Assignments Found</CardTitle>
-            <CardDescription>
-              {searchTerm 
-                ? 'No assignments match your search criteria. Try a different search term.' 
-                : profile?.role === 'tutor'
-                  ? 'You haven\'t created any assignments yet.'
-                  : 'You don\'t have any assignments at the moment.'
-              }
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            {profile?.role === 'tutor' && !searchTerm && (
-              <Button onClick={() => navigate('/assignments/create')}>
-                Create Your First Assignment
-              </Button>
-            )}
-          </CardFooter>
-        </Card>
+        <motion.div variants={fadeUp}>
+          <Card className="my-8 bg-blue-900/60 border-blue-700/60">
+            <CardHeader>
+              <CardTitle className="text-white">No Assignments Found</CardTitle>
+              <CardDescription className="text-sky-100/70">
+                {searchTerm 
+                  ? 'No assignments match your search criteria. Try a different search term.' 
+                  : profile?.role === 'tutor'
+                    ? 'You haven\'t created any assignments yet.'
+                    : 'You don\'t have any assignments at the moment.'
+                }
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
+              {profile?.role === 'tutor' && !searchTerm && (
+                <Button 
+                  onClick={() => navigate('/assignments/create')}
+                  className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+                >
+                  Create Your First Assignment
+                </Button>
+              )}
+            </CardFooter>
+          </Card>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

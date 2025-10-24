@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/sonner';
 import { format } from 'date-fns';
+import { motion } from 'framer-motion';
+import { staggerContainer, staggerItem, fadeUp } from '@/lib/animations';
 
 export default function MessagesPage() {
   const { user, profile } = useAuth();
@@ -255,20 +257,27 @@ export default function MessagesPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
-        <p>Loading messages...</p>
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-sky-400 border-t-transparent"></div>
+        <p className="ml-3 text-sky-100">Loading messages...</p>
       </div>
     );
   }
   
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Messages</h1>
+    <motion.div 
+      className="container mx-auto p-4"
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+    >
+      <motion.h1 variants={fadeUp} className="text-3xl font-bold mb-6 text-white">Messages</motion.h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[calc(100vh-10rem)]">
-        <Card className="md:col-span-1 flex flex-col overflow-hidden">
+        <motion.div variants={fadeUp}>
+        <Card className="md:col-span-1 flex flex-col overflow-hidden bg-blue-900/60 border-blue-700/60">
           <CardHeader>
-            <CardTitle className="text-lg">Contacts</CardTitle>
-            <CardDescription>Your conversations</CardDescription>
+            <CardTitle className="text-lg text-white">Contacts</CardTitle>
+            <CardDescription className="text-sky-100/70">Your conversations</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 overflow-hidden p-0">
             <ScrollArea className="h-full">
@@ -277,47 +286,49 @@ export default function MessagesPage() {
                   {contacts.map((contact) => (
                     <div key={contact.user_id}>
                       <button
-                        className={`flex items-center w-full p-3 rounded-md hover:bg-muted ${selectedContact?.user_id === contact.user_id ? 'bg-muted' : ''}`}
+                        className={`flex items-center w-full p-3 rounded-md hover:bg-sky-500/10 transition-colors ${selectedContact?.user_id === contact.user_id ? 'bg-sky-500/20' : ''}`}
                         onClick={() => handleContactSelect(contact)}
                       >
-                        <Avatar className="h-10 w-10 mr-3">
+                        <Avatar className="h-10 w-10 mr-3 border-2 border-sky-500/30">
                           <AvatarImage src={contact.avatar_url || undefined} />
-                          <AvatarFallback>
+                          <AvatarFallback className="bg-blue-900 text-sky-300">
                             {contact.full_name?.charAt(0) || 'U'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 text-left">
-                          <p className="font-medium">{contact.full_name}</p>
-                          <p className="text-sm text-muted-foreground">{contact.role}</p>
+                          <p className="font-medium text-white">{contact.full_name}</p>
+                          <p className="text-sm text-sky-100/70">{contact.role}</p>
                         </div>
                       </button>
-                      <Separator className="my-2" />
+                      <Separator className="my-2 bg-blue-700/30" />
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-full">
-                  <p className="text-muted-foreground">No contacts found</p>
+                  <p className="text-sky-100/70">No contacts found</p>
                 </div>
               )}
             </ScrollArea>
           </CardContent>
         </Card>
+        </motion.div>
         
-        <Card className="md:col-span-2 flex flex-col overflow-hidden">
+        <motion.div variants={fadeUp}>
+        <Card className="md:col-span-2 flex flex-col overflow-hidden bg-blue-900/60 border-blue-700/60">
           {selectedContact ? (
             <>
-              <CardHeader className="border-b">
+              <CardHeader className="border-b border-blue-700/60">
                 <div className="flex items-center">
-                  <Avatar className="h-10 w-10 mr-3">
+                  <Avatar className="h-10 w-10 mr-3 border-2 border-sky-500/30">
                     <AvatarImage src={selectedContact.avatar_url || undefined} />
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-blue-900 text-sky-300">
                       {selectedContact.full_name?.charAt(0) || 'U'}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <CardTitle>{selectedContact.full_name}</CardTitle>
-                    <CardDescription>{selectedContact.email}</CardDescription>
+                    <CardTitle className="text-white">{selectedContact.full_name}</CardTitle>
+                    <CardDescription className="text-sky-100/70">{selectedContact.email}</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -334,12 +345,12 @@ export default function MessagesPage() {
                           <div 
                             className={`max-w-[80%] rounded-lg p-3 ${
                               isCurrentUser 
-                                ? 'bg-primary text-primary-foreground' 
-                                : 'bg-muted'
+                                ? 'bg-gradient-to-r from-sky-500 to-indigo-500 text-white' 
+                                : 'bg-blue-900/80 border border-blue-700/60 text-sky-100'
                             }`}
                           >
                             <p>{message.content}</p>
-                            <p className={`text-xs mt-1 ${isCurrentUser ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                            <p className={`text-xs mt-1 ${isCurrentUser ? 'text-white/70' : 'text-sky-100/70'}`}>
                               {format(new Date(message.created_at), 'h:mm a')}
                             </p>
                           </div>
@@ -349,7 +360,7 @@ export default function MessagesPage() {
                   </div>
                 </ScrollArea>
               </CardContent>
-              <div className="p-4 border-t">
+              <div className="p-4 border-t border-blue-700/60">
                 <div className="flex gap-2">
                   <Input
                     placeholder="Type your message..."
@@ -361,10 +372,12 @@ export default function MessagesPage() {
                         handleSendMessage();
                       }
                     }}
+                    className="bg-blue-900/40 border-blue-700/60 text-white placeholder:text-sky-100/50"
                   />
                   <Button 
                     onClick={handleSendMessage} 
                     disabled={sending || !messageInput.trim()}
+                    className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
                   >
                     Send
                   </Button>
@@ -373,11 +386,12 @@ export default function MessagesPage() {
             </>
           ) : (
             <div className="flex items-center justify-center h-full">
-              <p className="text-muted-foreground">Select a contact to start messaging</p>
+              <p className="text-sky-100/70">Select a contact to start messaging</p>
             </div>
           )}
         </Card>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

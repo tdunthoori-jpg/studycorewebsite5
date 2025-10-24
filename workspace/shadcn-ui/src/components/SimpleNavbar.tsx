@@ -49,11 +49,12 @@ export function SimpleNavbar() {
   ];
 
   return (
-    <nav className="border-b bg-white">
+    <nav className="sticky top-0 z-50 backdrop-blur-md bg-blue-950/80 border-b border-sky-600/50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="font-bold text-xl">
+          <div className="font-bold text-xl text-sky-300 flex items-center gap-2">
+            <BookOpen className="h-6 w-6" />
             StudyCore
           </div>
 
@@ -65,7 +66,7 @@ export function SimpleNavbar() {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate(item.path)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-sky-100 hover:text-sky-300 hover:bg-sky-500/20 transition-all duration-300"
               >
                 <item.icon className="h-4 w-4" />
                 {item.label}

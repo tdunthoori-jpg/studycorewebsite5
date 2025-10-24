@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/SimpleAuthContext';
 import { supabase } from '@/lib/supabase';
+import { motion } from 'framer-motion';
 import { 
   Card, 
   CardContent, 
@@ -24,6 +25,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
+import { fadeUp, staggerContainer, staggerItem } from '@/lib/animations';
 
 interface DashboardStats {
   totalClasses: number;
@@ -211,20 +213,28 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[300px]">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-sky-400 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      className="space-y-6"
+      initial="hidden"
+      animate="show"
+      variants={staggerContainer}
+    >
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <motion.div 
+        className="flex justify-between items-center"
+        variants={fadeUp}
+      >
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-bold text-sky-300">
             Welcome back, {profile?.full_name}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sky-100/70">
             {profile?.role === 'tutor' ? 'Manage your classes and students' : 'Track your learning progress'}
           </p>
         </div>
@@ -233,142 +243,163 @@ export default function Dashboard() {
             variant="outline" 
             size="sm"
             onClick={() => navigate('/messages')}
+            className="border-sky-400 text-sky-300 hover:bg-sky-500/20"
           >
             <MessageSquare className="h-4 w-4 mr-2" />
             Messages
             {stats.unreadMessages > 0 && (
-              <Badge variant="destructive" className="ml-2">
+              <Badge className="ml-2 bg-gradient-to-r from-sky-500 to-indigo-500">
                 {stats.unreadMessages}
               </Badge>
             )}
           </Button>
           {profile?.role === 'tutor' && (
-            <Button onClick={() => navigate('/classes/create')}>
+            <Button 
+              onClick={() => navigate('/classes/create')}
+              className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+            >
               <Plus className="h-4 w-4 mr-2" />
               New Class
             </Button>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {profile?.role === 'tutor' ? 'Total Classes' : 'Enrolled Classes'}
-            </CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalClasses}</div>
-            <p className="text-xs text-muted-foreground">
-              {profile?.role === 'tutor' ? 'Active classes' : 'Currently enrolled'}
-            </p>
-          </CardContent>
-        </Card>
-
-        {profile?.role === 'tutor' && (
-          <Card>
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        variants={staggerContainer}
+      >
+        <motion.div variants={staggerItem}>
+          <Card className="bg-blue-900/60 border-blue-700/60 hover:border-sky-500/50 transition-all duration-500">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-white">
+                {profile?.role === 'tutor' ? 'Total Classes' : 'Enrolled Classes'}
+              </CardTitle>
+              <BookOpen className="h-4 w-4 text-sky-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalStudents}</div>
-              <p className="text-xs text-muted-foreground">
-                Across all classes
+              <div className="text-2xl font-bold text-white">{stats.totalClasses}</div>
+              <p className="text-xs text-sky-100/60">
+                {profile?.role === 'tutor' ? 'Active classes' : 'Currently enrolled'}
               </p>
             </CardContent>
           </Card>
+        </motion.div>
+
+        {profile?.role === 'tutor' && (
+          <motion.div variants={staggerItem}>
+            <Card className="bg-blue-900/60 border-blue-700/60 hover:border-sky-500/50 transition-all duration-500">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-white">Total Students</CardTitle>
+                <Users className="h-4 w-4 text-sky-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-white">{stats.totalStudents}</div>
+                <p className="text-xs text-sky-100/60">
+                  Across all classes
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
         )}
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {profile?.role === 'tutor' ? 'Total Assignments' : 'Assignments'}
-            </CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalAssignments}</div>
-            <p className="text-xs text-muted-foreground">
-              {profile?.role === 'tutor' ? 'Created assignments' : 'Available assignments'}
-            </p>
-          </CardContent>
-        </Card>
+        <motion.div variants={staggerItem}>
+          <Card className="bg-blue-900/60 border-blue-700/60 hover:border-sky-500/50 transition-all duration-500">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-white">
+                {profile?.role === 'tutor' ? 'Total Assignments' : 'Assignments'}
+              </CardTitle>
+              <FileText className="h-4 w-4 text-sky-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">{stats.totalAssignments}</div>
+              <p className="text-xs text-sky-100/60">
+                {profile?.role === 'tutor' ? 'Created assignments' : 'Available assignments'}
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {profile?.role === 'tutor' ? 'Pending Reviews' : 'Pending Work'}
-            </CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.pendingSubmissions}</div>
-            <p className="text-xs text-muted-foreground">
-              {profile?.role === 'tutor' ? 'Submissions to grade' : 'Assignments due'}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+        <motion.div variants={staggerItem}>
+          <Card className="bg-blue-900/60 border-blue-700/60 hover:border-sky-500/50 transition-all duration-500">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-white">
+                {profile?.role === 'tutor' ? 'Pending Reviews' : 'Pending Work'}
+              </CardTitle>
+              <Clock className="h-4 w-4 text-sky-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">{stats.pendingSubmissions}</div>
+              <p className="text-xs text-sky-100/60">
+                {profile?.role === 'tutor' ? 'Submissions to grade' : 'Assignments due'}
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              {profile?.role === 'tutor' ? 'Manage your teaching' : 'Access your learning tools'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
-              onClick={() => navigate('/classes')}
-            >
-              <BookOpen className="h-4 w-4 mr-2" />
-              {profile?.role === 'tutor' ? 'Manage Classes' : 'View Classes'}
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
-              onClick={() => navigate('/assignments')}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              {profile?.role === 'tutor' ? 'Manage Assignments' : 'View Assignments'}
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
-              onClick={() => navigate('/schedule')}
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              View Schedule
-            </Button>
-            {profile?.role === 'tutor' && (
+      <motion.div 
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        variants={staggerContainer}
+      >
+        <motion.div variants={staggerItem}>
+          <Card className="bg-blue-900/60 border-blue-700/60 hover:border-sky-500/50 transition-all duration-500">
+            <CardHeader>
+              <CardTitle className="text-white">Quick Actions</CardTitle>
+              <CardDescription className="text-sky-100/70">
+                {profile?.role === 'tutor' ? 'Manage your teaching' : 'Access your learning tools'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
               <Button 
                 variant="outline" 
-                className="w-full justify-start"
-                onClick={() => navigate('/students')}
+                className="w-full justify-start border-sky-400 text-sky-300 hover:bg-sky-500/20"
+                onClick={() => navigate('/classes')}
               >
-                <Users className="h-4 w-4 mr-2" />
-                View Students
+                <BookOpen className="h-4 w-4 mr-2" />
+                {profile?.role === 'tutor' ? 'Manage Classes' : 'View Classes'}
               </Button>
-            )}
-          </CardContent>
-        </Card>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start border-sky-400 text-sky-300 hover:bg-sky-500/20"
+                onClick={() => navigate('/assignments')}
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                {profile?.role === 'tutor' ? 'Manage Assignments' : 'View Assignments'}
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start border-sky-400 text-sky-300 hover:bg-sky-500/20"
+                onClick={() => navigate('/schedule')}
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                View Schedule
+              </Button>
+              {profile?.role === 'tutor' && (
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-sky-400 text-sky-300 hover:bg-sky-500/20"
+                  onClick={() => navigate('/students')}
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  View Students
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>
-              Latest updates from your {profile?.role === 'tutor' ? 'classes' : 'learning'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <motion.div variants={staggerItem}>
+          <Card className="bg-blue-900/60 border-blue-700/60 hover:border-sky-500/50 transition-all duration-500">
+            <CardHeader>
+              <CardTitle className="text-white">Recent Activity</CardTitle>
+              <CardDescription className="text-sky-100/70">
+                Latest updates from your {profile?.role === 'tutor' ? 'classes' : 'learning'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
             {recentActivity.length > 0 ? (
               <div className="space-y-3">
                 {recentActivity.map((activity) => (
@@ -380,11 +411,11 @@ export default function Dashboard() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium">{activity.title}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm font-medium text-white">{activity.title}</p>
+                      <p className="text-xs text-sky-100/60">
                         {activity.description}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-sky-100/60">
                         {new Date(activity.timestamp).toLocaleDateString()}
                       </p>
                     </div>
@@ -393,11 +424,11 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">
+                <TrendingUp className="h-12 w-12 mx-auto text-sky-400 mb-2" />
+                <p className="text-sm text-sky-100/70">
                   No recent activity
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-sky-100/60">
                   {profile?.role === 'tutor' 
                     ? 'Start by creating your first class'
                     : 'Enroll in classes to see activity here'
@@ -407,7 +438,8 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
-      </div>
-    </div>
+      </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -75,7 +75,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const DashboardRoute = ({ element }: { element: React.ReactNode }) => {
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-b from-sky-950 via-blue-950 to-blue-900 text-white">
         <SimpleNavbar />
         <div className="container mx-auto p-6">
           {element}
@@ -93,7 +93,7 @@ const AdminRoute = ({ element }: { element: React.ReactNode }) => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-sky-400 border-t-transparent"></div>
       </div>
     );
   }
@@ -107,7 +107,7 @@ const AdminRoute = ({ element }: { element: React.ReactNode }) => {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-sky-950 via-blue-950 to-blue-900 text-white">
       <SimpleNavbar />
       <div className="container mx-auto p-6">
         {element}

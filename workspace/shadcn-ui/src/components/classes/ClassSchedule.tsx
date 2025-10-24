@@ -249,15 +249,15 @@ export default function ClassSchedule({
   });
 
   return (
-    <Card>
+    <Card className="bg-blue-900/60 border-blue-700/60">
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-white">
+              <CalendarIcon className="h-5 w-5 text-sky-300" />
               Class Schedule
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sky-100/70">
               {isOwner 
                 ? 'Manage your class schedule and meeting times'
                 : 'View scheduled class sessions and meeting links'
@@ -268,17 +268,20 @@ export default function ClassSchedule({
           {isOwner && (
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={() => setEditingSchedule(null)}>
+                <Button 
+                  onClick={() => setEditingSchedule(null)}
+                  className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+                >
                   <PlusIcon className="h-4 w-4 mr-2" />
                   Add Schedule
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md bg-blue-900 border-blue-700/60">
                 <DialogHeader>
-                  <DialogTitle>
+                  <DialogTitle className="text-white">
                     {editingSchedule ? 'Edit Schedule' : 'Add New Schedule'}
                   </DialogTitle>
-                  <DialogDescription>
+                  <DialogDescription className="text-sky-100/70">
                     {editingSchedule 
                       ? 'Update the schedule details'
                       : 'Create a new recurring class session'

@@ -378,13 +378,13 @@ export default function ClassAnalytics({
   }
 
   return (
-    <Card>
+    <Card className="bg-blue-900/60 border-blue-700/60">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BarChart3Icon className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2 text-white">
+          <BarChart3Icon className="h-5 w-5 text-sky-300" />
           Class Analytics
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sky-100/70">
           {isOwner 
             ? 'Insights and metrics for your class performance'
             : 'Your performance and progress in this class'
@@ -394,9 +394,9 @@ export default function ClassAnalytics({
       
       <CardContent>
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="performance" disabled={!isOwner}>
+          <TabsList className="grid w-full grid-cols-2 bg-blue-900/60 border-blue-700/60">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">Overview</TabsTrigger>
+            <TabsTrigger value="performance" disabled={!isOwner} className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">
               {isOwner ? 'Performance' : 'Detailed Stats'}
             </TabsTrigger>
           </TabsList>

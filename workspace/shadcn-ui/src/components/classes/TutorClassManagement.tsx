@@ -193,59 +193,63 @@ export default function TutorClassManagement({
   return (
     <div className="space-y-6">
       {/* Class Management Header */}
-      <Card>
+      <Card className="bg-blue-900/60 border-blue-700/60">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <SettingsIcon className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-white">
+                <SettingsIcon className="h-5 w-5 text-sky-300" />
                 Class Management
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sky-100/70">
                 Manage your class settings and enrolled students
               </CardDescription>
             </div>
             <div className="flex gap-2">
               <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="rounded-2xl border-blue-700/60 hover:bg-sky-500/10 hover:border-sky-500/50"
+                  >
                     <EditIcon className="h-4 w-4 mr-2" />
                     Edit Class
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl bg-blue-900 border-blue-700/60">
                   <DialogHeader>
-                    <DialogTitle>Edit Class Details</DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="text-white">Edit Class Details</DialogTitle>
+                    <DialogDescription className="text-sky-100/70">
                       Update your class information and settings
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">
+                      <Label htmlFor="name" className="text-right text-white">
                         Name
                       </Label>
                       <Input
                         id="name"
                         value={editForm.name}
                         onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
-                        className="col-span-3"
+                        className="col-span-3 bg-blue-900/40 border-blue-700/60 text-white"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="description" className="text-right">
+                      <Label htmlFor="description" className="text-right text-white">
                         Description
                       </Label>
                       <Textarea
                         id="description"
                         value={editForm.description}
                         onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-                        className="col-span-3"
+                        className="col-span-3 bg-blue-900/40 border-blue-700/60 text-white"
                         rows={3}
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="max_students" className="text-right">
+                      <Label htmlFor="max_students" className="text-right text-white">
                         Max Students
                       </Label>
                       <Input
@@ -255,24 +259,24 @@ export default function TutorClassManagement({
                         max="100"
                         value={editForm.max_students}
                         onChange={(e) => setEditForm(prev => ({ ...prev, max_students: parseInt(e.target.value) || 1 }))}
-                        className="col-span-3"
+                        className="col-span-3 bg-blue-900/40 border-blue-700/60 text-white"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="status" className="text-right">
+                      <Label htmlFor="status" className="text-right text-white">
                         Status
                       </Label>
                       <Select
                         value={editForm.status}
-                        onValueChange={(value) => setEditForm(prev => ({ ...prev, status: value }))}
+                        onValueChange={(value) => setEditForm(prev => ({ ...prev, status: value as 'active' | 'inactive' | 'completed' }))}
                       >
-                        <SelectTrigger className="col-span-3">
+                        <SelectTrigger className="col-span-3 bg-blue-900/40 border-blue-700/60 text-white">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="inactive">Inactive</SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
+                        <SelectContent className="bg-blue-900 border-blue-700/60">
+                          <SelectItem value="active" className="text-white hover:bg-sky-500/10">Active</SelectItem>
+                          <SelectItem value="inactive" className="text-white hover:bg-sky-500/10">Inactive</SelectItem>
+                          <SelectItem value="completed" className="text-white hover:bg-sky-500/10">Completed</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -308,19 +312,19 @@ export default function TutorClassManagement({
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="sm">
+                  <Button variant="destructive" size="sm" className="rounded-2xl">
                     <TrashIcon className="h-4 w-4 mr-2" />
                     Delete Class
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="bg-blue-900 border-blue-700/60">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
+                    <AlertDialogTitle className="text-white">Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sky-100/70">
                       This action cannot be undone. This will permanently delete the class
                       and remove all associated data.
                       {enrolledStudents.length > 0 && (
-                        <span className="block mt-2 text-red-600 font-medium">
+                        <span className="block mt-2 text-red-400 font-medium">
                           Warning: This class has {enrolledStudents.length} enrolled student(s). 
                           Please remove all students before deleting.
                         </span>
@@ -328,11 +332,11 @@ export default function TutorClassManagement({
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel className="bg-blue-900/60 border-blue-700/60 text-white hover:bg-sky-500/10">Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDeleteClass}
                       disabled={enrolledStudents.length > 0}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      className="bg-red-500 text-white hover:bg-red-600"
                     >
                       Delete Class
                     </AlertDialogAction>
@@ -344,26 +348,26 @@ export default function TutorClassManagement({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <Users2Icon className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-              <div className="text-2xl font-bold">{getCurrentEnrollmentCount()}</div>
-              <div className="text-sm text-muted-foreground">Enrolled Students</div>
+            <div className="text-center p-4 bg-blue-900/40 border border-blue-700/60 rounded-lg">
+              <Users2Icon className="h-8 w-8 mx-auto mb-2 text-blue-400" />
+              <div className="text-2xl font-bold text-white">{getCurrentEnrollmentCount()}</div>
+              <div className="text-sm text-sky-100/70">Enrolled Students</div>
             </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <UserCheckIcon className="h-8 w-8 mx-auto mb-2 text-green-600" />
-              <div className="text-2xl font-bold">{getRemainingCapacity()}</div>
-              <div className="text-sm text-muted-foreground">Available Spots</div>
+            <div className="text-center p-4 bg-blue-900/40 border border-blue-700/60 rounded-lg">
+              <UserCheckIcon className="h-8 w-8 mx-auto mb-2 text-green-400" />
+              <div className="text-2xl font-bold text-white">{getRemainingCapacity()}</div>
+              <div className="text-sm text-sky-100/70">Available Spots</div>
             </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <BookOpenIcon className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-              <div className="text-2xl font-bold">{classData.max_students}</div>
-              <div className="text-sm text-muted-foreground">Max Capacity</div>
+            <div className="text-center p-4 bg-blue-900/40 border border-blue-700/60 rounded-lg">
+              <BookOpenIcon className="h-8 w-8 mx-auto mb-2 text-purple-400" />
+              <div className="text-2xl font-bold text-white">{classData.max_students}</div>
+              <div className="text-sm text-sky-100/70">Max Capacity</div>
             </div>
           </div>
 
           {isClassFull() && (
-            <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-              <p className="text-orange-800 text-sm font-medium">
+            <div className="mt-4 p-3 bg-orange-900/20 border border-orange-500/50 rounded-lg">
+              <p className="text-orange-300 text-sm font-medium">
                 ⚠️ Class is at full capacity. Students can still request to join and will be added to a waitlist.
               </p>
             </div>

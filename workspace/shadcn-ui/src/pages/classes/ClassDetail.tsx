@@ -37,6 +37,8 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from '@/components/ui/sonner';
+import { motion } from 'framer-motion';
+import { staggerContainer, fadeUp } from '@/lib/animations';
 
 interface ClassDetailProps {
   isCreateMode?: boolean;
@@ -336,7 +338,8 @@ export default function ClassDetail({ isCreateMode, defaultTab }: ClassDetailPro
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
-        <p>Loading class data...</p>
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-sky-400 border-t-transparent"></div>
+        <p className="ml-3 text-sky-100">Loading class data...</p>
       </div>
     );
   }
@@ -354,13 +357,18 @@ export default function ClassDetail({ isCreateMode, defaultTab }: ClassDetailPro
   if (!classData) {
     return (
       <div className="container mx-auto p-4">
-        <Card>
+        <Card className="bg-blue-900/60 border-blue-700/60">
           <CardHeader>
-            <CardTitle>Class Not Found</CardTitle>
-            <CardDescription>The class you are looking for does not exist or you do not have access to it.</CardDescription>
+            <CardTitle className="text-white">Class Not Found</CardTitle>
+            <CardDescription className="text-sky-100/70">The class you are looking for does not exist or you do not have access to it.</CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button onClick={() => navigate('/dashboard')}>Return to Dashboard</Button>
+            <Button 
+              onClick={() => navigate('/dashboard')}
+              className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+            >
+              Return to Dashboard
+            </Button>
           </CardFooter>
         </Card>
       </div>
@@ -368,54 +376,64 @@ export default function ClassDetail({ isCreateMode, defaultTab }: ClassDetailPro
   }
   
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <div className="flex flex-col md:flex-row justify-between gap-4">
+    <motion.div 
+      className="container mx-auto p-4 space-y-6"
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+    >
+      <motion.div variants={fadeUp} className="flex flex-col md:flex-row justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">{classData.name}</h1>
-          <p className="text-muted-foreground">{classData.description}</p>
+          <h1 className="text-3xl font-bold text-white">{classData.name}</h1>
+          <p className="text-sky-100/70">{classData.description}</p>
         </div>
-      </div>
+      </motion.div>
       
       {/* Student Enrollment Component */}
       {profile?.role === 'student' && (
+        <motion.div variants={fadeUp}>
         <StudentEnrollment
           classData={classData}
           tutorProfile={tutor}
           isEnrolled={isEnrolled}
           onEnrollmentChange={setIsEnrolled}
         />
+        </motion.div>
       )}
       
       {/* Tutor Class Management Component */}
       {profile?.role === 'tutor' && user?.id === classData.tutor_id && (
+        <motion.div variants={fadeUp}>
         <TutorClassManagement
           classData={classData}
           enrolledStudents={students}
           onClassUpdate={setClassData}
           onStudentsUpdate={setStudents}
         />
+        </motion.div>
       )}
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="schedule">Schedule</TabsTrigger>
-          <TabsTrigger value="assignments">Assignments</TabsTrigger>
-          <TabsTrigger value="resources">Resources</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          {profile?.role === 'tutor' && <TabsTrigger value="students">Students</TabsTrigger>}
+        <TabsList className="bg-blue-900/60 border-blue-700/60">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">Overview</TabsTrigger>
+          <TabsTrigger value="schedule" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">Schedule</TabsTrigger>
+          <TabsTrigger value="assignments" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">Assignments</TabsTrigger>
+          <TabsTrigger value="resources" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">Resources</TabsTrigger>
+          <TabsTrigger value="analytics" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">Analytics</TabsTrigger>
+          {profile?.role === 'tutor' && <TabsTrigger value="students" className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300">Students</TabsTrigger>}
         </TabsList>
         
         <TabsContent value="overview">
-          <Card>
+          <motion.div variants={fadeUp}>
+          <Card className="bg-blue-900/60 border-blue-700/60">
             <CardHeader>
-              <CardTitle>Class Overview</CardTitle>
+              <CardTitle className="text-white">Class Overview</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
-                  <h3 className="text-lg font-medium flex items-center">
-                    <CalendarIcon className="h-5 w-5 mr-2" />
+                  <h3 className="text-lg font-medium flex items-center text-white">
+                    <CalendarIcon className="h-5 w-5 mr-2 text-sky-300" />
                     Schedule
                   </h3>
                   <div className="mt-2">
@@ -435,11 +453,11 @@ export default function ClassDetail({ isCreateMode, defaultTab }: ClassDetailPro
                           endTime.setHours(endHour, endMinute, 0, 0);
                           
                           return (
-                            <div key={schedule.id} className="p-2 border rounded-md">
-                              <p className="font-medium">
+                            <div key={schedule.id} className="p-2 border border-blue-700/60 bg-blue-900/40 rounded-md">
+                              <p className="font-medium text-white">
                                 {dayName}s
                               </p>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-sm text-sky-100/70">
                                 {format(startTime, 'h:mm a')} - {format(endTime, 'h:mm a')}
                               </p>
                             </div>
@@ -447,14 +465,14 @@ export default function ClassDetail({ isCreateMode, defaultTab }: ClassDetailPro
                         })}
                       </div>
                     ) : (
-                      <p className="text-muted-foreground">No scheduled sessions</p>
+                      <p className="text-sky-100/70">No scheduled sessions</p>
                     )}
                   </div>
                 </div>
                 
                 <div>
-                  <h3 className="text-lg font-medium flex items-center">
-                    <FileTextIcon className="h-5 w-5 mr-2" />
+                  <h3 className="text-lg font-medium flex items-center text-white">
+                    <FileTextIcon className="h-5 w-5 mr-2 text-sky-300" />
                     Assignments
                   </h3>
                   <div className="mt-2">
@@ -463,124 +481,134 @@ export default function ClassDetail({ isCreateMode, defaultTab }: ClassDetailPro
                         {assignments.slice(0, 3).map((assignment) => (
                           <div 
                             key={assignment.id} 
-                            className="p-2 border rounded-md cursor-pointer hover:bg-muted/50"
+                            className="p-2 border border-blue-700/60 bg-blue-900/40 rounded-md cursor-pointer hover:bg-sky-500/10 hover:border-sky-500/50 transition-colors"
                             onClick={() => navigate(`/assignments/${assignment.id}`)}
                           >
-                            <p className="font-medium">{assignment.title}</p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="font-medium text-white">{assignment.title}</p>
+                            <p className="text-sm text-sky-100/70">
                               Due {format(new Date(assignment.due_date), 'PPP')}
                             </p>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-muted-foreground">No assignments</p>
+                      <p className="text-sky-100/70">No assignments</p>
                     )}
                   </div>
                 </div>
                 
                 <div>
-                  <h3 className="text-lg font-medium flex items-center">
-                    <BookOpenIcon className="h-5 w-5 mr-2" />
+                  <h3 className="text-lg font-medium flex items-center text-white">
+                    <BookOpenIcon className="h-5 w-5 mr-2 text-sky-300" />
                     Resources
                   </h3>
                   <div className="mt-2">
                     {resources.length > 0 ? (
                       <div className="space-y-2">
                         {resources.slice(0, 3).map((resource) => (
-                          <div key={resource.id} className="p-2 border rounded-md">
-                            <p className="font-medium">{resource.title}</p>
-                            <p className="text-sm text-muted-foreground">
+                          <div key={resource.id} className="p-2 border border-blue-700/60 bg-blue-900/40 rounded-md">
+                            <p className="font-medium text-white">{resource.title}</p>
+                            <p className="text-sm text-sky-100/70">
                               {resource.type}
                             </p>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-muted-foreground">No resources available</p>
+                      <p className="text-sky-100/70">No resources available</p>
                     )}
                   </div>
                 </div>
               </div>
               
               <div>
-                <h3 className="text-lg font-medium mb-2">About the Tutor</h3>
+                <h3 className="text-lg font-medium mb-2 text-white">About the Tutor</h3>
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12">
+                  <Avatar className="h-12 w-12 border-2 border-sky-500/30">
                     <AvatarImage src={tutor?.avatar_url || undefined} />
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-blue-900 text-sky-300">
                       {tutor?.full_name?.charAt(0) || 'T'}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium">{tutor?.full_name || 'Tutor'}</p>
-                    <p className="text-sm text-muted-foreground">{tutor?.email}</p>
+                    <p className="font-medium text-white">{tutor?.full_name || 'Tutor'}</p>
+                    <p className="text-sm text-sky-100/70">{tutor?.email}</p>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         </TabsContent>
         
         <TabsContent value="schedule">
+          <motion.div variants={fadeUp}>
           <ClassSchedule
             classData={classData}
             schedules={schedules}
             onSchedulesUpdate={setSchedules}
             isOwner={profile?.role === 'tutor' && profile.user_id === classData.tutor_id}
           />
+          </motion.div>
         </TabsContent>
         
         <TabsContent value="assignments">
+          <motion.div variants={fadeUp}>
           <ClassAssignments
             classData={classData}
             assignments={assignments}
             onAssignmentsUpdate={setAssignments}
             isOwner={profile?.role === 'tutor' && profile.user_id === classData.tutor_id}
           />
+          </motion.div>
         </TabsContent>
         
         <TabsContent value="resources">
+          <motion.div variants={fadeUp}>
           <ClassResources
             classData={classData}
             resources={resources}
             onResourcesUpdate={setResources}
             isOwner={profile?.role === 'tutor' && profile.user_id === classData.tutor_id}
           />
+          </motion.div>
         </TabsContent>
         
         <TabsContent value="analytics">
+          <motion.div variants={fadeUp}>
           <ClassAnalytics
             classData={classData}
             assignments={assignments}
             isOwner={profile?.role === 'tutor' && profile.user_id === classData.tutor_id}
           />
+          </motion.div>
         </TabsContent>
         
         {profile?.role === 'tutor' && (
           <TabsContent value="students">
-            <Card>
+            <motion.div variants={fadeUp}>
+            <Card className="bg-blue-900/60 border-blue-700/60">
               <CardHeader>
-                <CardTitle>Enrolled Students</CardTitle>
-                <CardDescription>Students currently enrolled in this class</CardDescription>
+                <CardTitle className="text-white">Enrolled Students</CardTitle>
+                <CardDescription className="text-sky-100/70">Students currently enrolled in this class</CardDescription>
               </CardHeader>
               <CardContent>
                 {students.length > 0 ? (
                   <ScrollArea className="h-[500px]">
                     <div className="space-y-4">
                       {students.map((student) => (
-                        <Card key={student.id} className="hover:shadow-md transition-shadow">
+                        <Card key={student.id} className="bg-blue-900/40 border-blue-700/60 hover:border-sky-500/50 transition-all">
                           <CardHeader className="pb-2">
                             <div className="flex items-center gap-4">
-                              <Avatar>
+                              <Avatar className="border-2 border-sky-500/30">
                                 <AvatarImage src={student.avatar_url || undefined} />
-                                <AvatarFallback>
+                                <AvatarFallback className="bg-blue-900 text-sky-300">
                                   {student.full_name?.split(' ').map(n => n[0]).join('') || 'ST'}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <CardTitle className="text-lg">{student.full_name}</CardTitle>
-                                <CardDescription>{student.email}</CardDescription>
+                                <CardTitle className="text-lg text-white">{student.full_name}</CardTitle>
+                                <CardDescription className="text-sky-100/70">{student.email}</CardDescription>
                               </div>
                             </div>
                           </CardHeader>
@@ -589,12 +617,14 @@ export default function ClassDetail({ isCreateMode, defaultTab }: ClassDetailPro
                               variant="outline" 
                               size="sm"
                               onClick={() => navigate(`/students/${student.user_id}`)}
+                              className="rounded-2xl border-blue-700/60 hover:bg-sky-500/10 hover:border-sky-500/50"
                             >
                               View Progress
                             </Button>
                             <Button 
                               size="sm"
                               variant="outline"
+                              className="rounded-2xl border-blue-700/60 hover:bg-sky-500/10 hover:border-sky-500/50"
                               onClick={() => navigate(`/messages?to=${student.user_id}`)}
                             >
                               Message
@@ -606,14 +636,15 @@ export default function ClassDetail({ isCreateMode, defaultTab }: ClassDetailPro
                   </ScrollArea>
                 ) : (
                   <div className="text-center py-8">
-                    <p>No students enrolled in this class yet.</p>
+                    <p className="text-sky-100/70">No students enrolled in this class yet.</p>
                   </div>
                 )}
               </CardContent>
             </Card>
+            </motion.div>
           </TabsContent>
         )}
       </Tabs>
-    </div>
+    </motion.div>
   );
 }

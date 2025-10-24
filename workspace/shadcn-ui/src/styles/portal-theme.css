@@ -1,0 +1,80 @@
+/* StudyCore Portal Theme - Blue Gradient Styling */
+
+/* Apply blue gradient background to all portal pages */
+.portal-page {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, rgb(8 47 73), rgb(23 37 84), rgb(30 58 138));
+  color: white;
+}
+
+/* Card styling with blue theme */
+.portal-card {
+  background: rgb(30 58 138 / 0.6);
+  border-color: rgb(29 78 216 / 0.6);
+  transition: all 0.5s;
+}
+
+.portal-card:hover {
+  border-color: rgb(14 165 233 / 0.5);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Text colors for portal */
+.portal-title {
+  color: rgb(125 211 252);
+}
+
+.portal-text {
+  color: rgb(224 242 254 / 0.7);
+}
+
+.portal-muted {
+  color: rgb(224 242 254 / 0.6);
+}
+
+/* Button styles */
+.portal-button-primary {
+  border-radius: 1rem;
+  background: linear-gradient(to right, rgb(14 165 233), rgb(99 102 241));
+  transition: all 0.3s;
+}
+
+.portal-button-primary:hover {
+  background: linear-gradient(to right, rgb(56 189 248), rgb(129 140 248));
+}
+
+.portal-button-outline {
+  border-color: rgb(56 189 248);
+  color: rgb(125 211 252);
+}
+
+.portal-button-outline:hover {
+  background: rgb(14 165 233 / 0.2);
+}
+
+/* Badge styles */
+.portal-badge {
+  background: linear-gradient(to right, rgb(14 165 233), rgb(99 102 241));
+}
+
+/* Icon colors */
+.portal-icon {
+  color: rgb(56 189 248);
+}
+
+/* Input and select styling */
+.portal-input {
+  background: rgb(30 58 138 / 0.7);
+  border-color: rgb(14 165 233 / 0.6);
+  color: white;
+}
+
+.portal-input:focus {
+  border-color: rgb(56 189 248);
+}
+
+/* Loading spinner */
+.portal-spinner {
+  border-color: rgb(56 189 248);
+  border-top-color: transparent;
+}

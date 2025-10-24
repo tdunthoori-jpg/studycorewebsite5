@@ -245,24 +245,25 @@ export default function StudentEnrollment({
   };
 
   return (
-    <Card>
+    <Card className="bg-blue-900/60 border-blue-700/60">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-white">
               {isEnrolled ? (
-                <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                <CheckCircleIcon className="h-5 w-5 text-green-400" />
               ) : (
-                <BookOpenIcon className="h-5 w-5" />
+                <BookOpenIcon className="h-5 w-5 text-sky-300" />
               )}
               Enrollment Status
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sky-100/70">
               {getEnrollmentStatusMessage()}
             </CardDescription>
           </div>
           <Badge 
             variant={isEnrolled ? "default" : enrollmentInfo.remainingSpots > 0 ? "secondary" : "destructive"}
+            className={isEnrolled ? "bg-green-500/20 text-green-300 border-green-500/50" : enrollmentInfo.remainingSpots > 0 ? "bg-sky-500/20 text-sky-300 border-sky-500/50" : ""}
           >
             {isEnrolled ? 'Enrolled' : enrollmentInfo.remainingSpots > 0 ? 'Available' : 'Full'}
           </Badge>
@@ -270,78 +271,82 @@ export default function StudentEnrollment({
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Class Capacity Info */}
-        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+        <div className="flex items-center justify-between p-3 bg-blue-900/40 border border-blue-700/60 rounded-lg">
           <div className="flex items-center gap-2">
-            <UsersIcon className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">Class Capacity</span>
+            <UsersIcon className="h-4 w-4 text-sky-300" />
+            <span className="text-sm text-sky-100">Class Capacity</span>
           </div>
-          <span className="font-medium">
+          <span className="font-medium text-white">
             {enrollmentInfo.currentStudents} / {enrollmentInfo.maxStudents} students
           </span>
         </div>
 
         {/* Price Info */}
         {classData.price_per_hour !== undefined && classData.price_per_hour > 0 && (
-          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+          <div className="flex items-center justify-between p-3 bg-blue-900/40 border border-blue-700/60 rounded-lg">
             <div className="flex items-center gap-2">
-              <DollarSignIcon className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">Price per Hour</span>
+              <DollarSignIcon className="h-4 w-4 text-sky-300" />
+              <span className="text-sm text-sky-100">Price per Hour</span>
             </div>
-            <span className="font-medium">${classData.price_per_hour.toFixed(2)}</span>
+            <span className="font-medium text-white">${classData.price_per_hour.toFixed(2)}</span>
           </div>
         )}
 
         {/* Tutor Info */}
         {tutorProfile && (
-          <div className="p-3 bg-muted/50 rounded-lg">
+          <div className="p-3 bg-blue-900/40 border border-blue-700/60 rounded-lg">
             <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-8 w-8 border-2 border-sky-500/30">
                 <AvatarImage src={tutorProfile.avatar_url || undefined} />
-                <AvatarFallback>
+                <AvatarFallback className="bg-blue-900 text-sky-300">
                   {tutorProfile.full_name?.split(' ').map(n => n[0]).join('') || 'T'}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-medium">Instructor</p>
-                <p className="text-sm text-muted-foreground">{tutorProfile.full_name}</p>
+                <p className="text-sm font-medium text-white">Instructor</p>
+                <p className="text-sm text-sky-100/70">{tutorProfile.full_name}</p>
               </div>
             </div>
           </div>
         )}
 
-        <Separator />
+        <Separator className="bg-blue-700/30" />
 
         {/* Enrollment Actions */}
         <div className="space-y-3">
           {isEnrolled ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <CheckCircleIcon className="h-5 w-5 text-green-600" />
-                <span className="text-sm text-green-800">
+              <div className="flex items-center gap-2 p-3 bg-green-900/20 border border-green-500/50 rounded-lg">
+                <CheckCircleIcon className="h-5 w-5 text-green-400" />
+                <span className="text-sm text-green-300">
                   You are successfully enrolled in this class!
                 </span>
               </div>
               
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="outline" className="w-full" disabled={isLoading}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full rounded-2xl border-blue-700/60 hover:bg-red-500/10 hover:border-red-500/50 text-white" 
+                    disabled={isLoading}
+                  >
                     <XCircleIcon className="h-4 w-4 mr-2" />
                     Unenroll from Class
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="bg-blue-900 border-blue-700/60">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Unenroll from Class</AlertDialogTitle>
-                    <AlertDialogDescription>
+                    <AlertDialogTitle className="text-white">Unenroll from Class</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sky-100/70">
                       Are you sure you want to unenroll from "{classData.name}"? 
                       You may lose your spot and need to re-enroll if the class becomes full.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel className="bg-blue-900/60 border-blue-700/60 text-white hover:bg-sky-500/10">Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleUnenroll}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      className="bg-red-500 text-white hover:bg-red-600"
                     >
                       Unenroll
                     </AlertDialogAction>
@@ -353,9 +358,9 @@ export default function StudentEnrollment({
             <div className="space-y-3">
               {/* Warning if class is almost full */}
               {enrollmentInfo.remainingSpots <= 3 && enrollmentInfo.remainingSpots > 0 && (
-                <div className="flex items-center gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                  <AlertTriangleIcon className="h-5 w-5 text-orange-600" />
-                  <span className="text-sm text-orange-800">
+                <div className="flex items-center gap-2 p-3 bg-orange-900/20 border border-orange-500/50 rounded-lg">
+                  <AlertTriangleIcon className="h-5 w-5 text-orange-400" />
+                  <span className="text-sm text-orange-300">
                     Only {enrollmentInfo.remainingSpots} spot{enrollmentInfo.remainingSpots !== 1 ? 's' : ''} remaining!
                   </span>
                 </div>
@@ -363,9 +368,9 @@ export default function StudentEnrollment({
 
               {/* Full class warning */}
               {enrollmentInfo.remainingSpots <= 0 && (
-                <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <XCircleIcon className="h-5 w-5 text-red-600" />
-                  <span className="text-sm text-red-800">
+                <div className="flex items-center gap-2 p-3 bg-red-900/20 border border-red-500/50 rounded-lg">
+                  <XCircleIcon className="h-5 w-5 text-red-400" />
+                  <span className="text-sm text-red-300">
                     This class is currently full. Contact the instructor for waitlist options.
                   </span>
                 </div>
@@ -375,24 +380,27 @@ export default function StudentEnrollment({
               {canEnroll() ? (
                 <Dialog open={showEnrollDialog} onOpenChange={setShowEnrollDialog}>
                   <DialogTrigger asChild>
-                    <Button className="w-full" disabled={isLoading}>
+                    <Button 
+                      className="w-full rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400" 
+                      disabled={isLoading}
+                    >
                       <CheckCircleIcon className="h-4 w-4 mr-2" />
                       Enroll in Class
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="bg-blue-900 border-blue-700/60">
                     <DialogHeader>
-                      <DialogTitle>Enroll in {classData.name}</DialogTitle>
-                      <DialogDescription>
+                      <DialogTitle className="text-white">Enroll in {classData.name}</DialogTitle>
+                      <DialogDescription className="text-sky-100/70">
                         Confirm your enrollment in this class. You will gain access to all class materials, 
                         assignments, and can participate in scheduled sessions.
                       </DialogDescription>
                     </DialogHeader>
                     
                     <div className="space-y-4">
-                      <div className="p-4 bg-muted/50 rounded-lg">
-                        <h4 className="font-medium mb-2">What you'll get:</h4>
-                        <ul className="text-sm space-y-1 list-disc list-inside">
+                      <div className="p-4 bg-blue-900/40 border border-blue-700/60 rounded-lg">
+                        <h4 className="font-medium mb-2 text-white">What you'll get:</h4>
+                        <ul className="text-sm space-y-1 list-disc list-inside text-sky-100/70">
                           <li>Access to all class materials and resources</li>
                           <li>Participation in live sessions and discussions</li>
                           <li>Assignment submission and feedback</li>
@@ -402,9 +410,9 @@ export default function StudentEnrollment({
                       </div>
 
                       {classData.price_per_hour && classData.price_per_hour > 0 && (
-                        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                          <InfoIcon className="h-5 w-5 text-blue-600" />
-                          <span className="text-sm text-blue-800">
+                        <div className="flex items-center gap-2 p-3 bg-blue-500/20 border border-blue-500/50 rounded-lg">
+                          <InfoIcon className="h-5 w-5 text-blue-400" />
+                          <span className="text-sm text-blue-200">
                             This class charges ${classData.price_per_hour}/hour. Payment details will be provided after enrollment.
                           </span>
                         </div>
@@ -412,17 +420,28 @@ export default function StudentEnrollment({
                     </div>
 
                     <DialogFooter>
-                      <Button variant="outline" onClick={() => setShowEnrollDialog(false)}>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setShowEnrollDialog(false)}
+                        className="bg-blue-900/60 border-blue-700/60 text-white hover:bg-sky-500/10"
+                      >
                         Cancel
                       </Button>
-                      <Button onClick={handleEnroll} disabled={isLoading}>
+                      <Button 
+                        onClick={handleEnroll} 
+                        disabled={isLoading}
+                        className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+                      >
                         {isLoading ? 'Enrolling...' : 'Confirm Enrollment'}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
               ) : (
-                <Button className="w-full" disabled>
+                <Button 
+                  className="w-full rounded-2xl" 
+                  disabled
+                >
                   {enrollmentInfo.remainingSpots <= 0 ? 'Class Full' : 'Cannot Enroll'}
                 </Button>
               )}

@@ -244,15 +244,15 @@ export default function ClassResources({
   );
 
   return (
-    <Card>
+    <Card className="bg-blue-900/60 border-blue-700/60">
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <FolderIcon className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-white">
+              <FolderIcon className="h-5 w-5 text-sky-300" />
               Class Resources
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sky-100/70">
               {isOwner 
                 ? 'Share files, links, and materials with your students'
                 : 'Access class materials and resources shared by your instructor'
@@ -263,17 +263,20 @@ export default function ClassResources({
           {isOwner && (
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={() => setEditingResource(null)}>
+                <Button 
+                  onClick={() => setEditingResource(null)}
+                  className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+                >
                   <PlusIcon className="h-4 w-4 mr-2" />
                   Add Resource
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl bg-blue-900 border-blue-700/60">
                 <DialogHeader>
-                  <DialogTitle>
+                  <DialogTitle className="text-white">
                     {editingResource ? 'Edit Resource' : 'Add New Resource'}
                   </DialogTitle>
-                  <DialogDescription>
+                  <DialogDescription className="text-sky-100/70">
                     {editingResource 
                       ? 'Update the resource details'
                       : 'Share a file, link, or material with your students'

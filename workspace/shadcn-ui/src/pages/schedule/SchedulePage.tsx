@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/sonner';
 import { ExternalLinkIcon, CalendarIcon, ClockIcon, PlusIcon, PencilIcon, BookOpenIcon } from 'lucide-react';
 import { format, addDays, isSameDay, isToday } from 'date-fns';
+import { motion } from 'framer-motion';
+import { staggerContainer, staggerItem, fadeUp } from '@/lib/animations';
 
 export default function SchedulePage() {
   const { user, profile } = useAuth();
@@ -184,17 +186,22 @@ export default function SchedulePage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-sky-400 border-t-transparent"></div>
       </div>
     );
   }
   
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <motion.div 
+      className="space-y-6"
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+    >
+      <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Schedule</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold text-white">Schedule</h1>
+          <p className="text-sky-100/70">
             {profile?.role === 'tutor' 
               ? 'Manage your class sessions and appointments'
               : 'View your scheduled classes and sessions'
@@ -203,27 +210,41 @@ export default function SchedulePage() {
         </div>
         
         {profile?.role === 'tutor' && (
-          <Button onClick={() => navigate('/schedule/create')}>
+          <Button 
+            onClick={() => navigate('/schedule/create')}
+            className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+          >
             <PlusIcon className="h-4 w-4 mr-2" />
             Add Session
           </Button>
         )}
-      </div>
+      </motion.div>
       
       <Tabs defaultValue="upcoming" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="upcoming">Upcoming Sessions</TabsTrigger>
-          <TabsTrigger value="calendar">Calendar View</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 bg-blue-900/60 border-blue-700/60">
+          <TabsTrigger 
+            value="upcoming"
+            className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300"
+          >
+            Upcoming Sessions
+          </TabsTrigger>
+          <TabsTrigger 
+            value="calendar"
+            className="data-[state=active]:bg-sky-500/20 data-[state=active]:text-sky-300"
+          >
+            Calendar View
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="upcoming" className="space-y-4">
-          <Card>
+          <motion.div variants={fadeUp}>
+          <Card className="bg-blue-900/60 border-blue-700/60">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ClockIcon className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-white">
+                <ClockIcon className="h-5 w-5 text-sky-300" />
                 Next 7 Days
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sky-100/70">
                 Your upcoming sessions and classes
               </CardDescription>
             </CardHeader>
@@ -239,28 +260,28 @@ export default function SchedulePage() {
                     const isToday = isSameDay(startTime, new Date());
                     
                     return (
-                      <Card key={schedule.id} className={isToday ? "border-primary" : ""}>
+                      <Card key={schedule.id} className={`bg-blue-900/60 border-blue-700/60 hover:border-sky-500/50 transition-colors ${isToday ? "border-sky-500" : ""}`}>
                         <CardContent className="p-4">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <BookOpenIcon className="h-4 w-4 text-muted-foreground" />
-                                <h3 className="font-semibold">{classInfo?.name || 'Class Session'}</h3>
-                                {isToday && <Badge>Today</Badge>}
-                                <Badge variant={schedule.recurring ? "outline" : "secondary"}>
+                                <BookOpenIcon className="h-4 w-4 text-sky-300" />
+                                <h3 className="font-semibold text-white">{classInfo?.name || 'Class Session'}</h3>
+                                {isToday && <Badge className="bg-sky-500/20 text-sky-300 border-sky-500/50">Today</Badge>}
+                                <Badge variant={schedule.recurring ? "outline" : "secondary"} className="border-blue-700/60">
                                   {schedule.recurring ? 'Weekly' : 'One-time'}
                                 </Badge>
                               </div>
-                              <p className="text-sm text-muted-foreground mb-2">
+                              <p className="text-sm text-sky-100/70 mb-2">
                                 {classInfo?.description}
                               </p>
-                              <div className="flex items-center gap-4 text-sm">
+                              <div className="flex items-center gap-4 text-sm text-sky-100">
                                 <div className="flex items-center gap-1">
-                                  <CalendarIcon className="h-4 w-4" />
+                                  <CalendarIcon className="h-4 w-4 text-sky-300" />
                                   <span>{format(startTime, 'EEEE, MMM d')}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <ClockIcon className="h-4 w-4" />
+                                  <ClockIcon className="h-4 w-4 text-sky-300" />
                                   <span>
                                     {format(startTime, 'h:mm a')} - {format(endTime, 'h:mm a')}
                                   </span>
@@ -270,7 +291,11 @@ export default function SchedulePage() {
                             
                             <div className="flex gap-2">
                               {schedule.google_meet_link && (
-                                <Button size="sm" asChild>
+                                <Button 
+                                  size="sm" 
+                                  asChild
+                                  className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+                                >
                                   <a href={schedule.google_meet_link} target="_blank" rel="noreferrer">
                                     <ExternalLinkIcon className="h-4 w-4 mr-2" />
                                     Join
@@ -283,6 +308,7 @@ export default function SchedulePage() {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => navigate(`/schedule/${schedule.id}/edit`)}
+                                  className="rounded-2xl border-blue-700/60 hover:bg-sky-500/10 hover:border-sky-500/50"
                                 >
                                   <PencilIcon className="h-4 w-4 mr-2" />
                                   Edit
@@ -297,16 +323,19 @@ export default function SchedulePage() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <CalendarIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No upcoming sessions</h3>
-                  <p className="text-muted-foreground mb-4">
+                  <CalendarIcon className="h-12 w-12 mx-auto text-sky-300 mb-4" />
+                  <h3 className="text-lg font-medium mb-2 text-white">No upcoming sessions</h3>
+                  <p className="text-sky-100/70 mb-4">
                     {profile?.role === 'tutor' 
                       ? 'You don\'t have any sessions scheduled for the next 7 days.'
                       : 'You don\'t have any classes scheduled for the next 7 days.'
                     }
                   </p>
                   {profile?.role === 'tutor' && (
-                    <Button onClick={() => navigate('/schedule/create')}>
+                    <Button 
+                      onClick={() => navigate('/schedule/create')}
+                      className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+                    >
                       <PlusIcon className="h-4 w-4 mr-2" />
                       Schedule a Session
                     </Button>
@@ -315,16 +344,18 @@ export default function SchedulePage() {
               )}
             </CardContent>
           </Card>
+          </motion.div>
         </TabsContent>
         
         <TabsContent value="calendar" className="space-y-4">
-          <Card>
+          <motion.div variants={fadeUp}>
+          <Card className="bg-blue-900/60 border-blue-700/60">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-white">
+                <CalendarIcon className="h-5 w-5 text-sky-300" />
                 Schedule Calendar
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sky-100/70">
                 View your class schedule on a calendar. Highlighted days show when you have classes.
               </CardDescription>
             </CardHeader>
@@ -369,27 +400,27 @@ export default function SchedulePage() {
                   </div>
                   
                   {/* Legend */}
-                  <div className="bg-muted/50 rounded-lg p-4">
-                    <h4 className="font-medium mb-3 text-sm">Legend</h4>
-                    <div className="space-y-2 text-xs">
+                  <div className="bg-blue-900/40 border border-blue-700/60 rounded-lg p-4">
+                    <h4 className="font-medium mb-3 text-sm text-white">Legend</h4>
+                    <div className="space-y-2 text-xs text-sky-100">
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded border-2 border-blue-300 bg-blue-50"></div>
+                        <div className="w-3 h-3 rounded border-2 border-sky-300 bg-sky-900"></div>
                         <span>Days with classes</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded bg-primary"></div>
+                        <div className="w-3 h-3 rounded bg-sky-500"></div>
                         <span>Selected date</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded bg-accent"></div>
+                        <div className="w-3 h-3 rounded bg-sky-300"></div>
                         <span>Today</span>
                       </div>
                     </div>
                   </div>
 
                   {schedules.length > 0 && (
-                    <div className="bg-muted/50 rounded-lg p-4">
-                      <h4 className="font-medium mb-3 text-sm">Your Class Days</h4>
+                    <div className="bg-blue-900/40 border border-blue-700/60 rounded-lg p-4">
+                      <h4 className="font-medium mb-3 text-sm text-white">Your Class Days</h4>
                       <div className="grid grid-cols-2 gap-2">
                         {Array.from(new Set(schedules.map(s => s.day_of_week)))
                           .sort()
@@ -397,9 +428,9 @@ export default function SchedulePage() {
                             const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayOfWeek];
                             const classesOnDay = schedules.filter(s => s.day_of_week === dayOfWeek);
                             return (
-                              <div key={dayOfWeek} className="px-2 py-1 bg-blue-50 border border-blue-200 rounded text-center">
-                                <div className="font-medium text-blue-900 text-xs">{dayName}</div>
-                                <div className="text-xs text-blue-700">
+                              <div key={dayOfWeek} className="px-2 py-1 bg-sky-900/50 border border-sky-700/60 rounded text-center">
+                                <div className="font-medium text-sky-300 text-xs">{dayName}</div>
+                                <div className="text-xs text-sky-100">
                                   {classesOnDay.length} class{classesOnDay.length > 1 ? 'es' : ''}
                                 </div>
                               </div>
@@ -412,8 +443,8 @@ export default function SchedulePage() {
 
                 {/* Selected Date Info */}
                 <div className="space-y-4">
-                  <div className="bg-muted/50 rounded-lg p-4">
-                    <h4 className="font-medium mb-2">
+                  <div className="bg-blue-900/40 border border-blue-700/60 rounded-lg p-4">
+                    <h4 className="font-medium mb-2 text-white">
                       {selectedDate ? format(selectedDate, 'EEEE, MMMM d, yyyy') : 'Select a Date'}
                     </h4>
                     {selectedDate ? (
@@ -424,7 +455,7 @@ export default function SchedulePage() {
                         if (classesOnSelectedDay.length > 0) {
                           return (
                             <div className="space-y-3">
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-sm text-sky-100/70">
                                 {classesOnSelectedDay.length} class{classesOnSelectedDay.length > 1 ? 'es' : ''} scheduled:
                               </p>
                               {classesOnSelectedDay.map((schedule) => {
@@ -438,19 +469,19 @@ export default function SchedulePage() {
                                 endTime.setHours(endHours, endMinutes, 0, 0);
                                 
                                 return (
-                                  <div key={schedule.id} className="bg-background rounded border p-3">
+                                  <div key={schedule.id} className="bg-blue-900/60 border border-blue-700/60 hover:border-sky-500/50 transition-colors rounded p-3">
                                     <div className="flex items-start justify-between gap-2">
                                       <div className="flex-1">
-                                        <div className="font-medium text-sm">
+                                        <div className="font-medium text-sm text-white">
                                           {classData?.name || 'Unknown Class'}
                                         </div>
-                                        <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                                          <ClockIcon className="h-3 w-3" />
+                                        <div className="text-xs text-sky-100 flex items-center gap-1 mt-1">
+                                          <ClockIcon className="h-3 w-3 text-sky-300" />
                                           {format(startTime, 'h:mm a')} - {format(endTime, 'h:mm a')}
                                         </div>
                                       </div>
                                       {schedule.google_meet_link && (
-                                        <div className="px-2 py-1 bg-primary text-primary-foreground rounded text-xs">
+                                        <div className="px-2 py-1 bg-sky-500 text-white rounded text-xs">
                                           <a href={schedule.google_meet_link} target="_blank" rel="noreferrer" className="flex items-center gap-1">
                                             <ExternalLinkIcon className="h-3 w-3" />
                                             Join
@@ -465,28 +496,28 @@ export default function SchedulePage() {
                           );
                         } else {
                           return (
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-sky-100/70">
                               No classes scheduled on this day.
                             </p>
                           );
                         }
                       })()
                     ) : (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-sky-100/70">
                         Click on a date to see your scheduled classes.
                       </p>
                     )}
                   </div>
 
                   {selectedDate && profile?.role === 'tutor' && (
-                    <div className="bg-muted/50 rounded-lg p-4">
-                      <h4 className="font-medium mb-2 text-sm">Quick Actions</h4>
+                    <div className="bg-blue-900/40 border border-blue-700/60 rounded-lg p-4">
+                      <h4 className="font-medium mb-2 text-sm text-white">Quick Actions</h4>
                       <div className="space-y-2">
-                        <div className="px-2 py-1 bg-background border rounded text-xs cursor-pointer hover:bg-muted/50"
+                        <div className="px-2 py-1 bg-blue-900/60 border border-blue-700/60 hover:border-sky-500/50 transition-colors rounded text-xs cursor-pointer text-sky-100"
                              onClick={() => setSelectedDate(new Date())}>
                           📅 Go to Today
                         </div>
-                        <div className="px-2 py-1 bg-background border rounded text-xs cursor-pointer hover:bg-muted/50"
+                        <div className="px-2 py-1 bg-blue-900/60 border border-blue-700/60 hover:border-sky-500/50 transition-colors rounded text-xs cursor-pointer text-sky-100"
                              onClick={() => navigate('/schedule/create', { state: { date: selectedDate } })}>
                           ➕ Add Class on {format(selectedDate, 'EEEE')}s
                         </div>
@@ -497,8 +528,9 @@ export default function SchedulePage() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         </TabsContent>
       </Tabs>
-    </div>
+    </motion.div>
   );
 }
