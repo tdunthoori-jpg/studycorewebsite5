@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { supabase } from '@/lib/supabase';
+import { getRedirectUrl } from '@/lib/config';
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Name is required and must be at least 2 characters'),
@@ -21,8 +23,9 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
-  const { user, profile, updateProfile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resetPasswordCooldown, setResetPasswordCooldown] = useState(0);
   
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -38,11 +41,24 @@ export default function ProfilePage() {
     try {
       setIsSubmitting(true);
       
-      await updateProfile({
-        full_name: values.full_name,
-        bio: values.bio,
-        avatar_url: values.avatar_url,
-      });
+      if (!profile?.id) {
+        toast.error('Profile not found');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: values.full_name,
+          bio: values.bio,
+          avatar_url: values.avatar_url,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+
+      await refreshProfile();
       
       toast.success('Profile updated successfully!');
     } catch (error) {
@@ -50,6 +66,43 @@ export default function ProfilePage() {
       toast.error('Failed to update profile. Please try again.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    try {
+      if (resetPasswordCooldown > 0) {
+        toast.error(`Please wait ${resetPasswordCooldown} seconds before requesting another reset`);
+        return;
+      }
+
+      if (!user?.email) {
+        toast.error('No email associated with this account');
+        return;
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+        redirectTo: getRedirectUrl('/reset-password'),
+      });
+
+      if (error) throw error;
+
+      toast.success('Password reset email sent! Please check your inbox.');
+      
+      // Start 60-second cooldown
+      setResetPasswordCooldown(60);
+      const interval = setInterval(() => {
+        setResetPasswordCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      toast.error('Failed to send password reset email');
     }
   };
   
@@ -209,7 +262,15 @@ export default function ProfilePage() {
                     <p className="text-sm text-muted-foreground mb-4">
                       For security reasons, you'll receive an email to reset your password.
                     </p>
-                    <Button variant="outline">Reset Password</Button>
+                    <Button 
+                      variant="outline"
+                      onClick={handlePasswordReset}
+                      disabled={resetPasswordCooldown > 0}
+                    >
+                      {resetPasswordCooldown > 0 
+                        ? `Wait ${resetPasswordCooldown}s` 
+                        : 'Reset Password'}
+                    </Button>
                   </div>
                   
                   <div className="pt-4 border-t">

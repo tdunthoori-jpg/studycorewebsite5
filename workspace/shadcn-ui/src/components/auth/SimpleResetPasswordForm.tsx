@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/lib/supabase';
+import { getRedirectUrl } from '@/lib/config';
 
 // Form validation schema
 const resetPasswordSchema = z.object({
@@ -36,7 +37,7 @@ export function SimpleResetPasswordForm() {
     
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
-        redirectTo: `${window.location.origin}/reset-password-confirm`,
+        redirectTo: getRedirectUrl('/reset-password-confirm'),
       });
       
       if (error) throw error;

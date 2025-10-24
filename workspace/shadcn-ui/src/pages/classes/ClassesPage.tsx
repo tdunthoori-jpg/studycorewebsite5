@@ -469,7 +469,8 @@ export default function ClassesPage() {
                   {profile?.role === 'tutor' && cls.tutor_id === user?.id && (
                   <Button 
                     variant="secondary" 
-                    onClick={() => navigate(`/classes/${cls.id}/edit`)}
+                    onClick={() => navigate(`/classes/${cls.id}`)}
+                    className="rounded-2xl border-blue-700/60 hover:bg-sky-500/10 hover:border-sky-500/50"
                   >
                     Edit
                   </Button>

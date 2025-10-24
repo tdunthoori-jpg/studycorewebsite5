@@ -461,10 +461,19 @@ export default function ClassAssignments({
           </div>
           
           {isOwner && (
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+              setIsCreateDialogOpen(open);
+              if (!open) {
+                setEditingAssignment(null);
+                assignmentForm.reset();
+              }
+            }}>
               <DialogTrigger asChild>
                 <Button 
-                  onClick={() => setEditingAssignment(null)}
+                  onClick={() => {
+                    setEditingAssignment(null);
+                    assignmentForm.reset();
+                  }}
                   className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
                 >
                   <PlusIcon className="h-4 w-4 mr-2" />

@@ -7,6 +7,7 @@ import { CheckCircle, Mail, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/SimpleAuthContext';
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/lib/supabase';
+import { getRedirectUrl } from '@/lib/config';
 
 export default function SimpleVerifyEmailPage() {
   const [searchParams] = useSearchParams();
@@ -76,7 +77,7 @@ export default function SimpleVerifyEmailPage() {
         type: 'signup',
         email: email.trim().toLowerCase(),
         options: {
-          emailRedirectTo: `${window.location.origin}/login?verified=true`
+          emailRedirectTo: getRedirectUrl('/login?verified=true')
         }
       });
       

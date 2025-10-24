@@ -286,11 +286,11 @@ export default function AssignmentsPage() {
           
           {profile?.role === 'tutor' && (
             <Button 
-              onClick={() => navigate('/assignments/create')}
+              onClick={() => navigate('/classes')}
               className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
             >
               <PlusIcon className="h-4 w-4 mr-2" />
-              Create Assignment
+              Go to Classes
             </Button>
           )}
         </div>
@@ -396,7 +396,7 @@ export default function AssignmentsPage() {
                 {searchTerm 
                   ? 'No assignments match your search criteria. Try a different search term.' 
                   : profile?.role === 'tutor'
-                    ? 'You haven\'t created any assignments yet.'
+                    ? 'You haven\'t created any assignments yet. Go to your classes and create assignments within each class.'
                     : 'You don\'t have any assignments at the moment.'
                 }
               </CardDescription>
@@ -404,10 +404,10 @@ export default function AssignmentsPage() {
             <CardFooter>
               {profile?.role === 'tutor' && !searchTerm && (
                 <Button 
-                  onClick={() => navigate('/assignments/create')}
+                  onClick={() => navigate('/classes')}
                   className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
                 >
-                  Create Your First Assignment
+                  Go to Your Classes
                 </Button>
               )}
             </CardFooter>

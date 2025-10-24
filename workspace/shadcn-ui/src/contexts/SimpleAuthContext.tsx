@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/sonner';
+import { getRedirectUrl } from '@/lib/config';
 
 // Define profile type
 type Profile = {
@@ -124,7 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
         options: {
           data: { role },
-          emailRedirectTo: `${window.location.origin}/login?verified=true`
+          emailRedirectTo: getRedirectUrl('/login?verified=true')
         },
       });
 

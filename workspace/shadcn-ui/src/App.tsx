@@ -9,6 +9,7 @@ import Index from './pages/Index';
 import Landing from './pages/Landing';
 import AuthPage from './pages/auth/AuthPage';
 import ResetPassword from './pages/auth/ResetPassword';
+import ResetPasswordConfirm from './pages/auth/ResetPasswordConfirm';
 import Dashboard from './pages/Dashboard';
 import ProfilePage from './pages/profile/ProfilePage';
 import ClassDetail from './pages/classes/ClassDetail';
@@ -18,6 +19,7 @@ import SchedulePage from './pages/schedule/SchedulePage';
 import AssignmentsPage from './pages/assignments/AssignmentsPage';
 import AssignmentDetail from './pages/assignments/AssignmentDetail';
 import MessagesPage from './pages/messages/MessagesPage';
+import StudentsPage from './pages/students/StudentsPage';
 import DebugPage from './pages/Debug';
 import DatabaseDebug from './pages/DatabaseDebug';
 import ProfileDebug from './pages/ProfileDebug';
@@ -137,6 +139,7 @@ const App = () => {
               <Route path="/login" element={<AuthPage />} />
               <Route path="/register" element={<AuthPage />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/reset-password-confirm" element={<ResetPasswordConfirm />} />
             <Route path="/debug" element={<DebugPage />} />
             <Route path="/db-debug" element={<DatabaseDebug />} />
             <Route path="/profile-debug" element={<ProfileDebug />} />
@@ -162,7 +165,7 @@ const App = () => {
               <Route path="/assignments" element={<DashboardRoute element={<AssignmentsPage />} />} />
               <Route path="/assignments/:id" element={<DashboardRoute element={<AssignmentDetail />} />} />
               <Route path="/messages" element={<DashboardRoute element={<MessagesPage />} />} />
-              <Route path="/students" element={<DashboardRoute element={<div>Students Page</div>} />} />
+              <Route path="/students" element={<DashboardRoute element={<StudentsPage />} />} />
               <Route path="/students/:id" element={<DashboardRoute element={<div>Student Detail Page</div>} />} />
               
               {/* Admin routes */}
