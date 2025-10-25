@@ -265,38 +265,38 @@ function StudyCoreSite() {
       </div>
 
       {/* Navbar with enhanced animations */}
-      <motion.header 
+      <motion.header
         className="sticky top-0 z-50 backdrop-blur-md bg-blue-950/80 border-b border-sky-600/50"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <motion.button 
-            onClick={() => go('home')} 
-            className="flex items-center gap-3 font-semibold text-xl text-sky-300"
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 min-h-[64px] py-2 flex flex-wrap items-center justify-between gap-2">
+          <motion.button
+            onClick={() => go('home')}
+            className="flex items-center gap-2 font-semibold text-lg sm:text-xl text-sky-300"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <span className="relative h-10 w-10 inline-flex items-center justify-center">
-              <img 
-                src={LOGO_SRC} 
-                alt="StudyCore logo" 
-                className="h-10 w-10 object-contain drop-shadow-lg" 
-                onError={(e) => { 
+            <span className="relative h-8 w-8 sm:h-10 sm:w-10 inline-flex items-center justify-center">
+              <img
+                src={LOGO_SRC}
+                alt="StudyCore logo"
+                className="h-8 w-8 sm:h-10 sm:w-10 object-contain drop-shadow-lg"
+                onError={(e) => {
                   console.log('Logo failed to load, hiding element');
-                  (e.currentTarget as HTMLImageElement).style.display = 'none'; 
-                }} 
+                  (e.currentTarget as HTMLImageElement).style.display = 'none';
+                }}
               />
             </span>
-            <span>StudyCore</span>
+            <span className="hidden xs:inline">StudyCore</span>
           </motion.button>
-          
-          <nav className="hidden md:flex items-center gap-6 text-sm">
+
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-sm">
             {['services', 'pricing', 'results', 'faq', 'contact', 'workwithus'].map((item, index) => (
-              <motion.button 
+              <motion.button
                 key={item}
-                onClick={() => go(item as SectionKey)} 
+                onClick={() => go(item as SectionKey)}
                 className={`relative ${section === item ? "text-sky-300" : "hover:text-sky-300"} transition-colors duration-300`}
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -320,30 +320,33 @@ function StudyCoreSite() {
               </motion.button>
             ))}
           </nav>
-          
-          <motion.div 
-            className="flex items-center gap-2"
+
+          <motion.div
+            className="flex items-center gap-2 flex-shrink-0"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8 }}
           >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mr-2">
-              <Button 
-                onClick={() => go('contact')} 
-                className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400 transition-all duration-300 shadow-lg hover:shadow-xl"
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={() => go('contact')}
+                size="sm"
+                className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400 transition-all duration-300 shadow-lg hover:shadow-xl text-xs sm:text-sm px-3 sm:px-4"
               >
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <span className="hidden sm:inline">Get Started</span>
+                <span className="sm:hidden">Start</span>
+                <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button 
+              <Button
                 asChild
-                variant="outline" 
-                className="rounded-2xl border-sky-400 text-sky-300 hover:bg-sky-500/20 transition-all duration-300"
+                size="sm"
+                variant="outline"
+                className="rounded-2xl border-sky-400 text-sky-300 hover:bg-sky-500/20 transition-all duration-300 text-xs sm:text-sm px-3 sm:px-4"
               >
                 <a href="/portal">
-                  Student Portal
+                  Portal
                 </a>
               </Button>
             </motion.div>

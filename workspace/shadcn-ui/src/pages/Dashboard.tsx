@@ -227,24 +227,24 @@ export default function Dashboard() {
       variants={staggerContainer}
     >
       {/* Header */}
-      <motion.div 
-        className="flex justify-between items-center"
+      <motion.div
+        className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center"
         variants={fadeUp}
       >
         <div>
-          <h1 className="text-3xl font-bold text-sky-300">
+          <h1 className="text-2xl md:text-3xl font-bold text-sky-300">
             Welcome back, {profile?.full_name}
           </h1>
-          <p className="text-sky-100/70">
+          <p className="text-sm md:text-base text-sky-100/70">
             {profile?.role === 'tutor' ? 'Manage your classes and students' : 'Track your learning progress'}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button 
-            variant="outline" 
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+          <Button
+            variant="outline"
             size="sm"
             onClick={() => navigate('/messages')}
-            className="border-sky-400 text-sky-300 hover:bg-sky-500/20"
+            className="border-sky-400 text-sky-300 hover:bg-sky-500/20 justify-center"
           >
             <MessageSquare className="h-4 w-4 mr-2" />
             Messages
@@ -255,9 +255,9 @@ export default function Dashboard() {
             )}
           </Button>
           {profile?.role === 'tutor' && (
-            <Button 
+            <Button
               onClick={() => navigate('/classes/create')}
-              className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400"
+              className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400 justify-center"
             >
               <Plus className="h-4 w-4 mr-2" />
               New Class
