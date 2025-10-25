@@ -12,6 +12,7 @@ import { toast } from '@/components/ui/sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { getRedirectUrl } from '@/lib/config';
+import { TutorLevelCard } from '@/components/tutor/TutorLevelCard';
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Name is required and must be at least 2 characters'),
@@ -165,6 +166,9 @@ export default function ProfilePage() {
           <Tabs defaultValue="profile" className="w-full">
             <TabsList className="mb-4">
               <TabsTrigger value="profile">Edit Profile</TabsTrigger>
+              {profile.role === 'tutor' && (
+                <TabsTrigger value="level">Level & Stats</TabsTrigger>
+              )}
               <TabsTrigger value="security">Security</TabsTrigger>
               <TabsTrigger value="preferences">Preferences</TabsTrigger>
             </TabsList>
@@ -247,7 +251,19 @@ export default function ProfilePage() {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
+            {profile.role === 'tutor' && (
+              <TabsContent value="level">
+                <TutorLevelCard
+                  tutorLevel={profile.tutor_level || 1}
+                  hourlyRate={profile.hourly_rate || 18.00}
+                  completedClasses={profile.completed_classes || 0}
+                  totalHoursTaught={profile.total_hours_taught || 0}
+                  variant="profile"
+                />
+              </TabsContent>
+            )}
+
             <TabsContent value="security">
               <Card>
                 <CardHeader>
