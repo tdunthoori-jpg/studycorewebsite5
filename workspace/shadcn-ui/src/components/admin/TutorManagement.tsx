@@ -43,6 +43,8 @@ export function TutorManagement() {
   const [editingTutor, setEditingTutor] = useState<TutorProfile | null>(null);
   const [editLevel, setEditLevel] = useState<number>(1);
   const [editRate, setEditRate] = useState<string>('18.00');
+  const [editCompletedClasses, setEditCompletedClasses] = useState<string>('0');
+  const [editTotalHours, setEditTotalHours] = useState<string>('0.0');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -72,6 +74,8 @@ export function TutorManagement() {
     setEditingTutor(tutor);
     setEditLevel(tutor.tutor_level || 1);
     setEditRate(tutor.hourly_rate?.toFixed(2) || '18.00');
+    setEditCompletedClasses((tutor.completed_classes || 0).toString());
+    setEditTotalHours((tutor.total_hours_taught || 0).toFixed(1));
   };
 
   const handleSaveChanges = async () => {
@@ -84,13 +88,15 @@ export function TutorManagement() {
         .update({
           tutor_level: editLevel,
           hourly_rate: parseFloat(editRate),
+          completed_classes: parseInt(editCompletedClasses),
+          total_hours_taught: parseFloat(editTotalHours),
           updated_at: new Date().toISOString(),
         })
         .eq('id', editingTutor.id);
 
       if (error) throw error;
 
-      toast.success('Tutor level and pay updated successfully!');
+      toast.success('Tutor information updated successfully!');
       setEditingTutor(null);
       loadTutors();
     } catch (error) {
@@ -189,11 +195,11 @@ export function TutorManagement() {
                           Edit
                         </Button>
                       </DialogTrigger>
-                      <DialogContent>
+                      <DialogContent className="max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                          <DialogTitle>Edit Tutor Level & Pay</DialogTitle>
+                          <DialogTitle>Edit Tutor Information</DialogTitle>
                           <DialogDescription>
-                            Adjust {tutor.full_name}'s level and hourly rate
+                            Adjust {tutor.full_name}'s level, pay, and statistics
                           </DialogDescription>
                         </DialogHeader>
 
@@ -247,16 +253,40 @@ export function TutorManagement() {
                             </p>
                           </div>
 
-                          <div className="pt-2 border-t">
-                            <p className="text-sm text-muted-foreground">
-                              <strong>Current Stats:</strong>
+                          <div className="pt-2 border-t space-y-4">
+                            <p className="text-sm font-semibold text-muted-foreground">
+                              Teaching Statistics
                             </p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              • {tutor.completed_classes || 0} completed classes
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              • {formatHours(tutor.total_hours_taught || 0)} total hours taught
-                            </p>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="completed_classes">Completed Classes</Label>
+                              <Input
+                                id="completed_classes"
+                                type="number"
+                                min="0"
+                                step="1"
+                                value={editCompletedClasses}
+                                onChange={(e) => setEditCompletedClasses(e.target.value)}
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Number of classes this tutor has completed
+                              </p>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="total_hours">Total Hours Taught</Label>
+                              <Input
+                                id="total_hours"
+                                type="number"
+                                min="0"
+                                step="0.5"
+                                value={editTotalHours}
+                                onChange={(e) => setEditTotalHours(e.target.value)}
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Total hours of instruction delivered
+                              </p>
+                            </div>
                           </div>
                         </div>
 

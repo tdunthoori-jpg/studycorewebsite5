@@ -11,6 +11,33 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { login, register, resetAuthState } from '@/lib/auth';
 import { toast } from '@/components/ui/sonner';
+import { motion } from 'framer-motion';
+
+// Animation variants
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: "easeOut"
+    }
+  }
+};
+
+const formFieldVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.3,
+      ease: "easeOut"
+    }
+  })
+};
 
 // Form validation schemas
 const loginSchema = z.object({
@@ -63,74 +90,111 @@ export function LoginForm() {
   };
   
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Sign In</CardTitle>
-        <CardDescription>Enter your email and password to access your account.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="you@example.com" {...field} disabled={isSubmitting} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••" {...field} disabled={isSubmitting} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
-                  Signing in...
-                </>
-              ) : "Sign In"}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-      <CardFooter className="flex flex-col space-y-2">
-        <div className="text-sm text-center space-y-1">
-          <div>
-            <button 
-              className="text-blue-500 hover:underline"
-              onClick={() => navigate('/forgot-password')}
-            >
-              Forgot your password?
-            </button>
-          </div>
-          <div>
-            <button 
-              className="text-gray-400 hover:underline text-xs"
-              onClick={() => resetAuthState()}
-            >
-              Reset Auth State
-            </button>
-          </div>
-        </div>
-      </CardFooter>
-    </Card>
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={cardVariants}
+    >
+      <Card className="w-full">
+        <CardHeader>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <CardTitle>Sign In</CardTitle>
+            <CardDescription>Enter your email and password to access your account.</CardDescription>
+          </motion.div>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <motion.div
+                custom={0}
+                initial="hidden"
+                animate="visible"
+                variants={formFieldVariants}
+              >
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="you@example.com" {...field} disabled={isSubmitting} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              <motion.div
+                custom={1}
+                initial="hidden"
+                animate="visible"
+                variants={formFieldVariants}
+              >
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="••••••" {...field} disabled={isSubmitting} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3, duration: 0.3 }}
+              >
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                      Signing in...
+                    </>
+                  ) : "Sign In"}
+                </Button>
+              </motion.div>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-2">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-sm text-center space-y-1"
+          >
+            <div>
+              <button
+                className="text-blue-500 hover:underline"
+                onClick={() => navigate('/forgot-password')}
+              >
+                Forgot your password?
+              </button>
+            </div>
+            <div>
+              <button
+                className="text-gray-400 hover:underline text-xs"
+                onClick={() => resetAuthState()}
+              >
+                Reset Auth State
+              </button>
+            </div>
+          </motion.div>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 }
 
@@ -168,115 +232,166 @@ export function RegisterForm() {
   };
   
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Create Account</CardTitle>
-        <CardDescription>Sign up for a new account to get started.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="you@example.com" {...field} disabled={isSubmitting} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••" {...field} disabled={isSubmitting} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••" {...field} disabled={isSubmitting} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Account Type</FormLabel>
-                  <FormControl>
-                    <RadioGroup 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-1"
-                      disabled={isSubmitting}
-                    >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="student" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Student
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="tutor" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Tutor
-                        </FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
-                  Creating Account...
-                </>
-              ) : "Create Account"}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-      <CardFooter className="flex justify-center">
-        <div className="text-sm">
-          Already have an account?{" "}
-          <button 
-            className="text-blue-500 hover:underline"
-            onClick={() => navigate('/login')}
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={cardVariants}
+    >
+      <Card className="w-full">
+        <CardHeader>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
           >
-            Sign in
-          </button>
-        </div>
-      </CardFooter>
-    </Card>
+            <CardTitle>Create Account</CardTitle>
+            <CardDescription>Sign up for a new account to get started.</CardDescription>
+          </motion.div>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <motion.div
+                custom={0}
+                initial="hidden"
+                animate="visible"
+                variants={formFieldVariants}
+              >
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="you@example.com" {...field} disabled={isSubmitting} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              <motion.div
+                custom={1}
+                initial="hidden"
+                animate="visible"
+                variants={formFieldVariants}
+              >
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="••••••" {...field} disabled={isSubmitting} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              <motion.div
+                custom={2}
+                initial="hidden"
+                animate="visible"
+                variants={formFieldVariants}
+              >
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="••••••" {...field} disabled={isSubmitting} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              <motion.div
+                custom={3}
+                initial="hidden"
+                animate="visible"
+                variants={formFieldVariants}
+              >
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel>Account Type</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col space-y-1"
+                          disabled={isSubmitting}
+                        >
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="student" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Student
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="tutor" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Tutor
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.3 }}
+              >
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                      Creating Account...
+                    </>
+                  ) : "Create Account"}
+                </Button>
+              </motion.div>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-sm"
+          >
+            Already have an account?{" "}
+            <button
+              className="text-blue-500 hover:underline"
+              onClick={() => navigate('/login')}
+            >
+              Sign in
+            </button>
+          </motion.div>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 }
 
