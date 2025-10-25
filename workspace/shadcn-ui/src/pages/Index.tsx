@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -122,7 +123,39 @@ function StudyCoreSite() {
   const HERO_SRC = "/assets/hero.png";
   const CALENDLY = "https://calendly.com/info-studycore/30min?month=2025-09";
 
-  const [section, setSection] = useState<SectionKey>("home");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get initial section from URL path or search parameter
+  const getInitialSection = (): SectionKey => {
+    const validSections: SectionKey[] = ["home", "services", "results", "pricing", "faq", "contact", "workwithus"];
+
+    // Check URL path first (e.g., /pricing)
+    const pathname = location.pathname.replace(/^\//, ''); // Remove leading slash
+    const pathMapping: Record<string, SectionKey> = {
+      'services': 'services',
+      'results': 'results',
+      'pricing': 'pricing',
+      'faq': 'faq',
+      'contact': 'contact',
+      'work-with-us': 'workwithus'
+    };
+
+    if (pathname in pathMapping) {
+      return pathMapping[pathname];
+    }
+
+    // Check search parameter (e.g., /?section=pricing)
+    const sectionParam = searchParams.get("section");
+    if (sectionParam && validSections.includes(sectionParam as SectionKey)) {
+      return sectionParam as SectionKey;
+    }
+
+    return "home";
+  };
+
+  const [section, setSection] = useState<SectionKey>(getInitialSection());
   const [form, setForm] = useState<FormData>({ name: "", email: "", grade: "", message: "" });
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [sending, setSending] = useState<boolean>(false);
@@ -133,6 +166,8 @@ function StudyCoreSite() {
   const go = (id: `#${SectionKey}` | SectionKey) => {
     const key = (typeof id === "string" && id.startsWith("#")) ? (id.slice(1) as SectionKey) : (id as SectionKey);
     setSection(key);
+    // Update URL to reflect current section
+    setSearchParams({ section: key });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -180,6 +215,14 @@ function StudyCoreSite() {
     { label: "Avg. SAT Total Gain", value: "+250", sub: "points after 8–10 weeks" },
     { label: "5-Star Reviews", value: "96%", sub: "from parents & students" },
   ];
+
+  // Update section when URL changes (for browser navigation)
+  useEffect(() => {
+    const newSection = getInitialSection();
+    if (newSection !== section) {
+      setSection(newSection);
+    }
+  }, [searchParams, location.pathname]);
 
   useEffect(() => {
     const allowed: SectionKey[] = ["home", "services", "pricing", "results", "faq", "contact", "workwithus"];

@@ -135,6 +135,15 @@ const App = () => {
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Index />} />
+
+              {/* Section routes - redirect to Index with section parameter */}
+              <Route path="/services" element={<Index />} />
+              <Route path="/results" element={<Index />} />
+              <Route path="/pricing" element={<Index />} />
+              <Route path="/faq" element={<Index />} />
+              <Route path="/contact" element={<Index />} />
+              <Route path="/work-with-us" element={<Index />} />
+
               <Route path="/portal" element={<Landing />} />
               <Route path="/login" element={<AuthPage />} />
               <Route path="/register" element={<AuthPage />} />
