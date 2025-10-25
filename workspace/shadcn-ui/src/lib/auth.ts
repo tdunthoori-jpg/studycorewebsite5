@@ -53,25 +53,25 @@ export async function login(email: string, password: string) {
     // Handle missing profile
     if (!profile || profileError?.code === 'PGRST116') {
       toast.info('Setting up your profile...');
-      
-      // Create basic profile
+
+      // Create basic profile WITHOUT full_name so user is prompted to complete it
       await supabase.from('profiles').insert({
         user_id: data.user.id,
         email: data.user.email || '',
-        full_name: data.user.user_metadata?.full_name || 'User',
+        full_name: null, // Don't set a default - force user to complete profile
         role: data.user.user_metadata?.role || 'student',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       });
-      
+
       setTimeout(() => {
         window.location.href = '/setup-profile';
       }, 1000);
       return { success: true };
     }
-    
-    // Check if profile is complete
-    if (!profile.full_name) {
+
+    // Check if profile is complete (no name, empty name, or default 'User' name)
+    if (!profile.full_name || profile.full_name.trim() === '' || profile.full_name === 'User') {
       toast.info('Please complete your profile');
       setTimeout(() => {
         window.location.href = '/setup-profile';

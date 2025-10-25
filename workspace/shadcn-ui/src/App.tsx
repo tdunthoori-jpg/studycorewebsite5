@@ -59,8 +59,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/verify-email" state={{ from: location }} replace />;
   }
   
-  // Check if profile is incomplete
-  if (!profile?.full_name) {
+  // Check if profile is incomplete (no name, empty name, or default 'User' name)
+  if (!profile?.full_name || profile.full_name.trim() === '' || profile.full_name === 'User') {
     return <Navigate to="/setup-profile" state={{ from: location }} replace />;
   }
   

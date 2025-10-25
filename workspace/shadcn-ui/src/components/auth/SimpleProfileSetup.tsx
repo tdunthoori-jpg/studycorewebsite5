@@ -53,8 +53,8 @@ export function SimpleProfileSetup() {
         toast.error('Please sign in to continue');
         navigate('/login');
       }
-      // If user has a complete profile, redirect to dashboard
-      else if (profile?.full_name) {
+      // If user has a complete profile (not empty, not 'User'), redirect to dashboard
+      else if (profile?.full_name && profile.full_name.trim() !== '' && profile.full_name !== 'User') {
         navigate('/dashboard');
       }
       // If user email is not verified
