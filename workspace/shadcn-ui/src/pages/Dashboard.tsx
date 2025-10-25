@@ -13,12 +13,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  BookOpen, 
-  Users, 
-  Calendar, 
-  FileText, 
-  MessageSquare, 
+import {
+  BookOpen,
+  Users,
+  Calendar,
+  FileText,
+  MessageSquare,
   Bell,
   Plus,
   Clock,
@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { fadeUp, staggerContainer, staggerItem } from '@/lib/animations';
+import { TutorLevelCard } from '@/components/tutor/TutorLevelCard';
 
 interface DashboardStats {
   totalClasses: number;
@@ -265,8 +266,21 @@ export default function Dashboard() {
         </div>
       </motion.div>
 
+      {/* Tutor Level Card (Tutors Only) */}
+      {profile?.role === 'tutor' && (
+        <motion.div variants={fadeUp}>
+          <TutorLevelCard
+            tutorLevel={profile.tutor_level || 1}
+            hourlyRate={profile.hourly_rate || 18.00}
+            completedClasses={profile.completed_classes || 0}
+            totalHoursTaught={profile.total_hours_taught || 0}
+            variant="dashboard"
+          />
+        </motion.div>
+      )}
+
       {/* Stats Grid */}
-      <motion.div 
+      <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         variants={staggerContainer}
       >

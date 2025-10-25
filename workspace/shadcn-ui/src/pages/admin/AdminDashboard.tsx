@@ -8,8 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { toast } from '@/components/ui/sonner';
-import { Users, UserCheck, UserX, Clock, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { Users, UserCheck, UserX, Clock, CheckCircle, XCircle, RefreshCw, GraduationCap } from 'lucide-react';
 import { format } from 'date-fns';
+import { TutorManagement } from '@/components/admin/TutorManagement';
 
 type PendingUser = {
   id: string;
@@ -220,6 +221,10 @@ export default function AdminDashboard() {
           <TabsTrigger value="approved">
             Recent Approvals ({recentApprovals.length})
           </TabsTrigger>
+          <TabsTrigger value="tutors">
+            <GraduationCap className="h-4 w-4 mr-2" />
+            Tutor Management
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="pending">
@@ -376,6 +381,10 @@ export default function AdminDashboard() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="tutors">
+          <TutorManagement />
         </TabsContent>
       </Tabs>
     </div>
